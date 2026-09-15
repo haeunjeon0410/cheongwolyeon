@@ -13,6 +13,26 @@ export function formatDistance(meters?: number) {
   return `약 ${(meters / 1000).toFixed(1)}km`
 }
 
+
+export function isWithinCampus(latitude: number, longitude: number, campus: 'campus1' | 'campus2', marginMeters = 70) {
+  const bounds =
+    campus === 'campus1'
+      ? { minLat: 37.54526, maxLat: 37.546578, minLon: 126.963425, maxLon: 126.965274 }
+      : { minLat: 37.544264, maxLat: 37.544672, minLon: 126.963936, maxLon: 126.964202 }
+
+  // Expand the map bounds slightly so GPS 오차 때문에 교정문/출입구 근처에서
+  // 현재 위치 점이 갑자기 사라지지 않도록 합니다.
+  const latMargin = marginMeters / 111_000
+  const lonMargin = marginMeters / (111_000 * Math.cos((latitude * Math.PI) / 180))
+
+  return (
+    latitude >= bounds.minLat - latMargin &&
+    latitude <= bounds.maxLat + latMargin &&
+    longitude >= bounds.minLon - lonMargin &&
+    longitude <= bounds.maxLon + lonMargin
+  )
+}
+
 export function gpsToMapPosition(latitude: number, longitude: number, campus: 'campus1' | 'campus2') {
   const bounds =
     campus === 'campus1'

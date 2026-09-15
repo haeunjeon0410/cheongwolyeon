@@ -1,7 +1,7 @@
 export type Campus = 'campus1' | 'campus2'
 export type Day = 'day1' | 'day2'
 export type BoothLocation = { id: string; campus: Campus; code: string; latitude: number; longitude: number; mapPosition: { x: number; y: number }; mapSize?: { width: number; height: number }; location: string }
-export type Booth = { id: string; locationId: string; date: Day; session?: 'day' | 'night'; name: string; category?: string; description?: string; menu?: string[]; events?: string[]; operatingHours?: string; posterImage?: string; posterImages?: string[] }
+export type Booth = { id: string; locationId: string; date: Day; session?: 'day' | 'night'; name: string; category?: string; description?: string; menu?: string[]; events?: string[]; operatingHours?: string; posterImage?: string; posterImages?: string[]; promoLinks?: { instagram?: string; everytime?: string } }
 export type ScheduleItem = { date: Day; time: string; title: string; place: string; description?: string }
 export type Artist = { id: string; day: Day; name: string; note?: string }
 export type Notice = { id: string; scope: 'global' | 'location'; title: string; body: string; locationId?: string }

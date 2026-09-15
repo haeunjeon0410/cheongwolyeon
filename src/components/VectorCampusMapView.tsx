@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState, type PointerEvent, type WheelEvent } from 'react'
 import { Navigation, Plus, Minus } from 'lucide-react'
 import type { Booth, Campus, Day } from '../types'
-import { gpsToMapPosition } from '../utils'
+import { gpsToMapPosition, isWithinCampus } from '../utils'
 
 type MapItem = { booth: Booth; location: { code: string; mapPosition: { x: number; y: number }; mapSize?: { width: number; height: number }; latitude: number; longitude: number } }
-type Props = { campus: Campus; day: Day; setDay: (day: Day) => void; visibleItems: MapItem[]; selectedBooth: Booth | null; setSelectedBooth: (booth: Booth | null) => void; status: string; coords?: GeolocationCoordinates; requestLocation: () => void }
+type Props = { campus: Campus; day: Day; setDay: (day: Day) => void; visibleItems: MapItem[]; selectedBooth: Booth | null; lastViewedBooth: Booth | null; setSelectedBooth: (booth: Booth | null) => void; status: string; coords?: GeolocationCoordinates; requestLocation: () => void }
 const mapSources: Record<Campus, string> = { campus1: '/assets/maps/campus1.png', campus2: '/assets/maps/campus2.png' }
 
 type Point = { x: number; y: number }
 
-export default function VectorCampusMapView({ campus, day, setDay, visibleItems, selectedBooth, setSelectedBooth, status, coords, requestLocation }: Props) {
+export default function VectorCampusMapView({ campus, day, setDay, visibleItems, selectedBooth, lastViewedBooth, setSelectedBooth, status, coords, requestLocation }: Props) {
   const [zoom, setZoom] = useState(() => (typeof window !== 'undefined' && window.innerWidth < 980 ? 1.18 : 1))
   const [pan, setPan] = useState({ x: 0, y: 0 })
   const [dragging, setDragging] = useState(false)
@@ -114,7 +114,6 @@ export default function VectorCampusMapView({ campus, day, setDay, visibleItems,
   }
 
   const onWheel = (event: WheelEvent<HTMLDivElement>) => {
-    event.preventDefault()
     changeZoom(zoom + (event.deltaY < 0 ? .2 : -.2), { x: event.clientX, y: event.clientY })
   }
 
@@ -144,28 +143,31 @@ export default function VectorCampusMapView({ campus, day, setDay, visibleItems,
             </button>
           })}
         </div>
-        {selectedBooth && (() => {
-          const item = visibleItems.find((entry) => entry.booth.id === selectedBooth.id)
+        {lastViewedBooth && (() => {
+          const item = visibleItems.find((entry) => entry.booth.id === lastViewedBooth.id)
           if (!item) return null
           const pos = item.location.mapPosition
+          const width = item.location.mapSize ? item.location.mapSize.width / 1536 * 100 : 3.2
+          const height = item.location.mapSize ? item.location.mapSize.height / 1024 * 100 : 3.2
           return (
-            <div className="selected-booth-marker-layer">
-            <img
-              className="selected-booth-marker"
-              style={{
-                left: `${pos.x}%`,
-                top: `${pos.y}%`,
-                width: item.location.mapSize ? `${item.location.mapSize.width / 1536 * 100}%` : '3.2%',
-                height: item.location.mapSize ? `${item.location.mapSize.height / 1024 * 100}%` : '3.2%',
-              }}
-              src="/assets/markers/lantern-marker-20260915-040004.png"
-              alt="선택한 부스"
-              draggable={false}
-            />
+            <div className="selected-booth-marker-layer" aria-hidden="true">
+              <img
+                className="selected-booth-marker"
+                style={{
+                  // mapPosition은 부스 영역의 중심점이므로, 마커도 그 중심을 기준으로
+                  // 부스 상단 중앙에 붙인다. (기존에는 width/2를 더해 우측 꼭짓점으로 밀렸음)
+                  left: `calc(${pos.x}% + ${width / 2}%)`,
+                  top: `calc(${pos.y}% - ${height / 2}%)`,
+                  transform: 'translate(-50%, -100%)',
+                }}
+                src="/assets/markers/lantern-marker-cropped.png"
+                alt=""
+                draggable={false}
+              />
             </div>
           )
         })()}
-        {status === 'success' && coords && <div className="user-current-dot" style={{ left: `${gpsToMapPosition(coords.latitude, coords.longitude, campus).x}%`, top: `${gpsToMapPosition(coords.latitude, coords.longitude, campus).y}%` }} />}
+        {status === 'success' && coords && isWithinCampus(coords.latitude, coords.longitude, campus) && (() => { const pos = gpsToMapPosition(coords.latitude, coords.longitude, campus); return <div className="user-current-dot" style={{ left: `${pos.x}%`, top: `${pos.y}%` }} /> })()}
       </div>
       <div className="map-day-switcher" onPointerDown={(event) => event.stopPropagation()}>
         <button type="button" className={`zone-chip-btn ${day === 'day1' ? 'active' : ''}`} onClick={() => setDay('day1')}>DAY 1</button>

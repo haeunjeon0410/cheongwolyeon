@@ -10,7 +10,7 @@ export const officialLinks: OfficialLinks = {
 }
 
 // 무대 MC
-export const stageMC = { name: '윤수빈', description: '식품영양학과 동문, OBS 기상캐스터·LCK 아나운서 출신. 2년 연속 청파제 MC.' }
+export const stageMC = { name: '윤수빈', description: '식품영양학과 동문, OBS 기상캐스터·LCK 아나운서 출신' }
 
 // 아티스트 라인업 (공연 시간 미정)
 export const artists: Artist[] = [
@@ -19,7 +19,7 @@ export const artists: Artist[] = [
   { id: 'artist-d1-3', day: 'day1', name: '최예나' },
   { id: 'artist-d2-1', day: 'day2', name: '힛지스' },
   { id: 'artist-d2-2', day: 'day2', name: '피프티피프티' },
-  { id: 'artist-d2-3', day: 'day2', name: '프로미스나인', note: '멤버 지원 불참 (09/15 수정)' },
+  { id: 'artist-d2-3', day: 'day2', name: '프로미스나인' },
 ]
 
 // 전체 안전/운영 공지 (global) + 특정 구역용(location) 안내
@@ -56,11 +56,11 @@ export const notices: Notice[] = [
   },
 ]
 
-// 협찬사 및 파트너
+// 함께하는 곳
 export const sponsors: Sponsor[] = [
-  { id: 'sponsor-steambase', name: '스팀베이스', description: '스킨케어·헤어케어 브랜드. 퍼펙트 샴푸 브러쉬 협찬 — 버스킹 공연(1캠 원형극장 등)·눈송산책 참여 시 SNS 인증하고 중앙본부에서 교환권 제시 후 수령.' },
-  { id: 'sponsor-alumni', name: '총동문회', description: '창학 120주년 기념 한복 대여 부스 지원 (2캠퍼스 눈꽃광장, 보증금 1만원 · 대여료 1천~5천원).' },
-  { id: 'sponsor-mallang', name: '몰랑이 (윤혜지 작가)', description: '시각영상디자인과 동문이자 몰랑이 작가와의 콜라보 굿즈(달토끼몰랑 클리커, UV 스티커) 협업.' },
+  { id: 'partner-gangnam-eye', name: '강남브랜드안과', description: '제1캠퍼스 순헌사거리 서측 프로모션 부스 · 9/16(수) 13:00~16:00' },
+  { id: 'partner-one-person-support', name: '찾아가는 1인가구 지원사업', description: '서울시 1인가구 지원사업 홍보 부스 · 9/16(수) 13:00~16:00 · 순헌사거리 서측' },
+  { id: 'partner-steambase', name: '스팀베이스', description: '퍼펙트 샴푸 브러쉬 협찬 · 버스킹 공연 및 눈송산책 연계 배부' },
 ]
 
 // 푸드트럭 (순헌사거리 양측, 9/16~17 11:00~22:00, 총 8대)

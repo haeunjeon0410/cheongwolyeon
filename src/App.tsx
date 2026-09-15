@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
+  Bug,
   CalendarDays,
   ChevronRight,
   Compass,
@@ -7,6 +8,7 @@ import {
   LocateFixed,
   MapPin,
   Music2,
+  ExternalLink,
   Search,
   ShoppingBag,
   Sparkles,
@@ -32,11 +34,42 @@ function getCategoryIcon(category?: string) {
   return Sparkles
 }
 
+function displayCategory(category?: string) {
+  return category?.replace(/상점/g, '굿즈') || ''
+}
+
 const assets = {
   welcome: '/assets/mascot/nunsongi-welcome-20260915-040013.png',
   mapMascot: '/assets/mascot/nunsongi-map-20260915-040604.png',
   emptyMascot: '/assets/mascot/nunsongi-empty-20260915-040613.png',
   lanternMarker: '/assets/markers/lantern-marker-20260915-040004.png',
+}
+
+function BoothPromoLinks({ booth }: { booth: Booth }) {
+  // 인스타 홍보글이 있으면 인스타를 우선 사용하고,
+  // 인스타가 없는 경우에만 에브리타임 링크를 사용합니다.
+  const instagram = booth.promoLinks?.instagram
+  const everytime = booth.promoLinks?.everytime
+  const promoUrl = instagram || everytime
+  if (!promoUrl) return null
+
+  const isInstagram = Boolean(instagram)
+
+  return (
+    <div className="booth-promo-links">
+      <a className={`booth-promo-btn ${isInstagram ? 'instagram' : 'everytime'}`} href={promoUrl} target="_blank" rel="noreferrer">
+        {isInstagram ? (
+          <svg className="instagram-mark" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" strokeWidth="2" />
+            <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" strokeWidth="2" />
+            <circle cx="17.3" cy="6.8" r="1.1" fill="currentColor" />
+          </svg>
+        ) : <span className="everytime-mark">E</span>}
+        <span>홍보글 보러가기</span>
+        <ExternalLink size={13} />
+      </a>
+    </div>
+  )
 }
 
 
@@ -61,8 +94,7 @@ function ArtistLineup({ day }: { day: Day }) {
       <div className="artist-lineup-heading">
         <div>
           <h3>{day === 'day1' ? 'DAY 1 · 아티스트 라인업' : 'DAY 2 · 아티스트 라인업'}</h3>
-          <p>청파제 밤을 채우는 메인 무대</p>
-        </div>
+                  </div>
         <Music2 size={20} />
       </div>
       <div className="artist-chips">
@@ -121,7 +153,7 @@ function FestivalIntro({ onEnter }: { onEnter: () => void }) {
         <h1 className="font-serif">青月宴</h1>
         <p className="intro-title">청월연</p>
         <img src={assets.emptyMascot} alt="청월연 마스코트 눈송이" className="intro-mascot" />
-        <p className="intro-copy">달빛 아래, 우리의 청춘이<br />채워지는 시간</p>
+        <p className="intro-copy"><span>푸른 달빛이 비추는 숙명의 지나온 120년,</span><span>그리고 앞으로 걸어갈 달</span></p>
         <div className="intro-continue">9.16 WED — 9.17 THU · 숙명여자대학교</div>
       </div>
     </div>
@@ -134,10 +166,22 @@ function FestivalInfo({ compact = false }: { compact?: boolean }) {
       <section className="info-hero-card">
         <div>
           <span className="section-kicker">CHEONGWOL YEON</span>
-          <h2 className="font-serif">달빛 아래,<br />우리의 연회를 시작해요.</h2>
+          <h2 className="font-serif">달빛 아래,<br /><span className="mobile-break-fix">우리의 연회를 시작해요.</span></h2>
           <p>2026 청파제 청월연 공식 가이드에서 부스, 공연, 먹거리와 축제 프로그램을 한 번에 확인하세요.</p>
         </div>
         <img src={assets.welcome} alt="" />
+      </section>
+
+      <section className="info-card concept-card">
+        <div className="info-card-title"><span>CONCEPT</span><strong>청월연 이야기</strong></div>
+        <div className="concept-copy">
+          <p><strong>청월(靑月)</strong>은 숙명의 120년을 지켜본 시간의 기록이자, 앞으로 나아갈 미래를 비추는 달을 의미합니다.</p>
+          <p>과거와 미래가 만나는 2026년, 숙명인들은 지나온 역사를 돌아보고 오늘의 우리를 기념하며 하나의 연회를 엽니다.</p>
+        </div>
+        <div className="concept-campus-grid">
+          <div><span>01</span><strong>소월당 蘇月堂</strong><p>지나온 120년의 발자취와 기억이 머무는 공간입니다.</p></div>
+          <div><span>02</span><strong>금월관 今月館</strong><p>지금 이 순간, 각자의 자리에서 빛나는 오늘의 우리를 비추는 공간입니다.</p></div>
+        </div>
       </section>
 
       <section className="info-card">
@@ -181,27 +225,28 @@ function FestivalInfo({ compact = false }: { compact?: boolean }) {
         </div>
         <div className="hanbok-note"><b>한복 대여</b><span>{hanbokRental.location} · {hanbokRental.hours}</span></div>
       </section>
+
+
     </div>
   )
 }
 
 export default function App() {
   const [tab, setTab] = useState<'map' | 'nearby' | 'schedule' | 'more'>('map')
+  const [selectedSchedule, setSelectedSchedule] = useState<(typeof schedules)[number] | null>(null)
+  const [scheduleMode, setScheduleMode] = useState<'stage' | 'busking'>('stage')
   const [campus, setCampus] = useState<Campus>('campus1')
   const [day, setDay] = useState<Day>('day1')
   const [selectedBooth, setSelectedBooth] = useState<Booth | null>(null)
+  const [lastViewedBooth, setLastViewedBooth] = useState<Booth | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [nearbyFilter, setNearbyFilter] = useState<'all' | 'food' | 'experience' | 'store'>('all')
-  const [recentBooths, setRecentBooths] = useState<Booth[]>([])
   // 앱에 들어올 때마다 짧은 시네마틱 인트로를 보여준다.
   const [showIntro, setShowIntro] = useState(true)
   const dismissIntro = () => setShowIntro(false)
 
-  const rememberBooth = (booth: Booth) => {
-    setRecentBooths((current) => [booth, ...current.filter((item) => item.id !== booth.id)].slice(0, 4))
-    setSelectedBooth(booth)
-  }
+
 
   const { position, status, requestLocation, setPosition } = useGeolocation()
   const coords = position?.coords
@@ -212,15 +257,68 @@ export default function App() {
 
   useEffect(() => {
     if (selectedBooth) {
-      setRecentBooths((current) => [selectedBooth, ...current.filter((item) => item.id !== selectedBooth.id)].slice(0, 4))
+      setLastViewedBooth(selectedBooth)
     }
   }, [selectedBooth])
 
-  // 부스 및 좌표 데이터 매핑 및 검색 필터링
-  const allCampusItems = useMemo(() => booths
-    .filter((b) => b.date === day)
-    .map((b) => ({ booth: b, location: locations.find((loc) => loc.id === b.locationId)! }))
-    .filter((item) => item.location && item.location.campus === campus), [day, campus])
+  // 부스 상세정보는 날짜별 위치 데이터와 분리해서 사용한다.
+  // 같은 부스가 양일에 올라온 경우, 현재 날짜 레코드에 일부 정보가 비어 있어도
+  // 다른 날짜의 동일 부스에 있는 상세정보를 보완해서 보여준다.
+  const normalizeBoothName = (name = '') => name.replace(/[^0-9a-zA-Z가-힣]/g, '').toLowerCase()
+  const mergeBoothDetails = (booth: Booth) => {
+    const key = normalizeBoothName(booth.name)
+    if (!key) return booth
+    const candidates = booths.filter((other) => {
+      if (other.id === booth.id || other.locationId !== booth.locationId) return false
+      const otherKey = normalizeBoothName(other.name)
+      return otherKey === key || (key.includes('청명') && otherKey.includes('청명')) || (key.includes('향영') && otherKey.includes('향영'))
+    })
+    const richer = [...candidates].sort((a, b) => {
+      const score = (item: Booth) => [item.description, item.menu?.length, item.events?.length, item.operatingHours, item.promoLinks?.instagram || item.promoLinks?.everytime].filter(Boolean).length
+      return score(b) - score(a)
+    })[0]
+    if (!richer) return booth
+    return {
+      ...richer,
+      ...booth,
+      description: booth.description || richer.description,
+      category: booth.category || richer.category,
+      menu: booth.menu?.length ? booth.menu : richer.menu,
+      events: booth.events?.length ? booth.events : richer.events,
+      operatingHours: booth.operatingHours || richer.operatingHours,
+      posterImage: booth.posterImage || richer.posterImage,
+      posterImages: booth.posterImages?.length ? booth.posterImages : richer.posterImages,
+      promoLinks: { ...richer.promoLinks, ...booth.promoLinks },
+    }
+  }
+
+  // 배치도에 있는 2캠퍼스 E01~E20은 상세정보가 없어도 모든 칸을 지도에서 선택할 수 있게 한다.
+  const allCampusItems = useMemo(() => {
+    if (campus === 'campus2') {
+      return locations
+        .filter((loc) => loc.campus === campus)
+        .map((location) => {
+          const candidates = booths.filter((b) => b.date === day && b.locationId === location.id)
+          const booth = candidates[0]
+          if (booth) return { booth: mergeBoothDetails(booth), location }
+          return {
+            booth: {
+              id: `layout-${day}-${location.id}`,
+              locationId: location.id,
+              date: day,
+              name: `${location.code} 부스`,
+              description: '상세 정보는 아직 준비 중입니다.',
+            } as Booth,
+            location,
+          }
+        })
+    }
+
+    return booths
+      .filter((b) => b.date === day)
+      .map((b) => ({ booth: mergeBoothDetails(b), location: locations.find((loc) => loc.id === b.locationId)! }))
+      .filter((item) => item.location && item.location.campus === campus)
+  }, [day, campus])
 
   const visibleItems = useMemo(() => {
     const q = normalizeSearchText(searchQuery)
@@ -260,7 +358,7 @@ export default function App() {
   const nearbyDisplayItems = useMemo(() => {
     const filtered = nearbyFilter === 'all' ? nearbyItems : nearbyItems.filter(({ booth }) => {
       const category = booth.category || ''
-      if (nearbyFilter === 'food') return category.includes('먹거리')
+      if (nearbyFilter === 'food') return category.includes('음식') || category.includes('먹거리')
       if (nearbyFilter === 'experience') return category.includes('체험') || category.includes('게임') || category.includes('이벤트')
       if (nearbyFilter === 'store') return category.includes('굿즈') || category.includes('판매')
       return true
@@ -282,21 +380,44 @@ export default function App() {
   return (
     <>
       <div className="festival-atmosphere" aria-hidden="true">
-        <img className="atmosphere-stars" src="/assets/decoration/stars-20260915-040004.png" alt="" />
-        <img className="atmosphere-moon" src="/assets/decoration/crescent-moon-20260915-040004.png" alt="" />
-        <img className="atmosphere-cloud cloud-one" src="/assets/decoration/cloud-long-20260915-040004.png" alt="" />
-        <img className="atmosphere-cloud cloud-two" src="/assets/decoration/cloud-small-20260915-040021.png" alt="" />
+        <img
+          className="atmosphere-stars"
+          src="/assets/decoration/stars-20260915-040004.png"
+          alt=""
+        />
+        <img
+          className="atmosphere-moon"
+          src="/assets/decoration/crescent-moon-20260915-040004.png"
+          alt=""
+        />
+        <img
+          className="atmosphere-cloud cloud-one"
+          src="/assets/decoration/cloud-long-20260915-040004.png"
+          alt=""
+        />
+        <img
+          className="atmosphere-cloud cloud-two"
+          src="/assets/decoration/cloud-small-20260915-040021.png"
+          alt=""
+        />
       </div>
       {showIntro && <FestivalIntro onEnter={dismissIntro} />}
       {/* 📱 Mobile Layout */}
       <div className="app-container">
         {/* Mobile Top Header */}
         <header className="mobile-header">
-          <button className="mobile-brand brand-home-button" onClick={() => { setTab('map'); setSelectedBooth(null) }} aria-label="홈으로">
+          <button
+            className="mobile-brand brand-home-button"
+            onClick={() => {
+              setTab("map");
+              setSelectedBooth(null);
+            }}
+            aria-label="홈으로"
+          >
             <h1>青月宴</h1>
             <span>2026 청파제</span>
           </button>
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: "flex", gap: "8px" }}>
             <button
               className="header-action-btn"
               onClick={() => setIsSearchOpen(!isSearchOpen)}
@@ -304,14 +425,13 @@ export default function App() {
             >
               <Search size={18} />
             </button>
-
           </div>
         </header>
 
         {/* Mobile Search Overlay Bar */}
         {isSearchOpen && (
-          <div style={{ padding: '10px 16px', background: 'rgba(6, 18, 48, 0.95)', borderBottom: '1px solid rgba(212, 175, 55, 0.2)' }}>
-            <div className="desktop-search-box" style={{ maxWidth: '100%' }}>
+          <div className="mobile-search-overlay">
+            <div className="desktop-search-box mobile-search-box">
               <Search size={16} color="#c4d1e8" />
               <input
                 type="text"
@@ -321,17 +441,34 @@ export default function App() {
                 autoFocus
               />
               {searchQuery && (
-                <button onClick={() => setSearchQuery('')}>
+                <button onClick={() => setSearchQuery("")}>
                   <X size={14} color="#a0b0d0" />
                 </button>
               )}
               {searchQuery.trim() && (
                 <div className="search-results-popover mobile-search-results">
-                  {searchResults.length ? searchResults.map(({ booth, location }) => (
-                    <button key={booth.id} type="button" onClick={() => { rememberBooth(booth); setTab('map'); setSearchQuery(''); setIsSearchOpen(false) }}>
-                      <span>{booth.name}</span><small>{booth.category || '부스'} · {location.location}</small>
-                    </button>
-                  )) : <div className="search-empty">검색 결과가 없습니다.</div>}
+                  {searchResults.length ? (
+                    searchResults.map(({ booth, location }) => (
+                      <button
+                        key={booth.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedBooth(booth);
+                          setTab("map");
+                          setSearchQuery("");
+                          setIsSearchOpen(false);
+                        }}
+                      >
+                        <span>{booth.name}</span>
+                        <small>
+                          {displayCategory(booth.category) || "부스"} ·{" "}
+                          {location.location}
+                        </small>
+                      </button>
+                    ))
+                  ) : (
+                    <div className="search-empty">검색 결과가 없습니다.</div>
+                  )}
                 </div>
               )}
             </div>
@@ -339,26 +476,33 @@ export default function App() {
         )}
 
         {/* Tab 1: Map View */}
-        {tab === 'map' && (
+        {tab === "map" && (
           <>
             <div className="segment-switcher-box">
               <div className="segment-row">
                 <button
-                  className={campus === 'campus1' ? 'active' : ''}
-                  onClick={() => setCampus('campus1')}
+                  className={campus === "campus1" ? "active" : ""}
+                  onClick={() => setCampus("campus1")}
                 >
                   1캠퍼스
                 </button>
                 <button
-                  className={campus === 'campus2' ? 'active' : ''}
-                  onClick={() => setCampus('campus2')}
+                  className={campus === "campus2" ? "active" : ""}
+                  onClick={() => setCampus("campus2")}
                 >
                   2캠퍼스
                 </button>
               </div>
             </div>
 
-            <main style={{ flex: 1, padding: '0 16px', display: 'flex', flexDirection: 'column' }}>
+            <main
+              style={{
+                flex: 1,
+                padding: "0 16px",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
               <div className="map-home-shell">
                 <VectorCampusMapView
                   campus={campus}
@@ -366,103 +510,109 @@ export default function App() {
                   setDay={setDay}
                   visibleItems={visibleItems}
                   selectedBooth={selectedBooth}
+                  lastViewedBooth={lastViewedBooth}
                   setSelectedBooth={setSelectedBooth}
                   status={status}
                   coords={coords}
                   requestLocation={requestLocation}
                 />
               </div>
-
             </main>
           </>
         )}
 
         {/* Tab 2: All Booths View */}
-        {tab === 'nearby' && (
+        {tab === "nearby" && (
           <main className="nearby-view-container">
             <div className="view-heading">
               <p>내 주변</p>
               <h2>내 주변 부스</h2>
               <small>
-                {status === 'loading' 
-                  ? '위치를 확인하는 중입니다...'
-                  : coords 
-                  ? '현재 위치 기준 가까운 순서' 
-                  : '아래 버튼을 눌러 위치를 허용하면 거리를 볼 수 있습니다'}
+                {status === "loading"
+                  ? "위치를 확인하는 중입니다..."
+                  : !coords
+                    ? "위치를 허용하면 가까운 부스를 찾을 수 있습니다"
+                    : ""}
               </small>
             </div>
 
-
-            {recentBooths.length > 0 && (
-              <section className="recent-booths-section" aria-label="최근 본 부스">
-                <div className="recent-booths-heading">
-                  <span>RECENT</span>
-                  <strong>최근 본 부스</strong>
-                </div>
-                <div className="recent-booths-list">
-                  {recentBooths.map((booth) => {
-                    const location = locations.find((item) => item.id === booth.locationId)
-                    if (!location) return null
-                    return (
-                      <button key={booth.id} type="button" className="recent-booth-chip" onClick={() => { rememberBooth(booth); setTab('map') }}>
-                        <span>{location.code}</span>
-                        <strong>{booth.name}</strong>
-                      </button>
-                    )
-                  })}
-                </div>
-              </section>
-            )}
-
             <div className="nearby-toolbar">
-              <div className="nearby-filter-row" role="tablist" aria-label="부스 카테고리 필터">
-                {([
-                  ['all', '전체'],
-                  ['food', '음식'],
-                  ['experience', '체험'],
-                  ['store', '상점'],
-                ] as const).map(([key, label]) => (
+              <div
+                className="nearby-filter-row"
+                role="tablist"
+                aria-label="부스 카테고리 필터"
+              >
+                {(
+                  [
+                    ["all", "전체"],
+                    ["food", "음식"],
+                    ["experience", "체험"],
+                    ["store", "굿즈"],
+                  ] as const
+                ).map(([key, label]) => (
                   <button
                     key={key}
                     type="button"
-                    className={`nearby-filter-chip ${nearbyFilter === key ? 'active' : ''}`}
+                    className={`nearby-filter-chip ${nearbyFilter === key ? "active" : ""}`}
                     onClick={() => setNearbyFilter(key)}
-                  >{label}</button>
+                  >
+                    {label}
+                  </button>
                 ))}
               </div>
-              <button className="location-permission-btn" onClick={requestLocation} disabled={status === 'loading'} title="위치 권한 사용">
+              <button
+                className="location-permission-btn"
+                onClick={requestLocation}
+                disabled={status === "loading"}
+                title="위치 권한 사용"
+              >
                 <LocateFixed size={13} />
-                <span>{status === 'loading' ? '확인 중' : coords ? '위치 새로고침' : '위치 권한'}</span>
+                <span>
+                  {status === "loading"
+                    ? "확인 중"
+                    : coords
+                      ? "위치 새로고침"
+                      : "위치 권한"}
+                </span>
               </button>
             </div>
 
-            {nearbyDisplayItems.map(({ booth, location, distance, locationCodes }) => {
-              const CategoryIcon = getCategoryIcon(booth.category)
-              return (
-                <button
-                  key={booth.id}
-                  className="booth-list-card"
-                  onClick={() => { rememberBooth(booth); setTab('map') }}
-                >
-                  {distance !== undefined && <div className="booth-distance-tag">{formatDistance(distance)}</div>}
-                  <div className="booth-thumb-avatar">
-                    <CategoryIcon size={20} />
-                  </div>
-                  <div className="booth-info-text">
-                    <b>{booth.name}</b>
-                    <small>
-                      {booth.category} · {location.location}
-                    </small>
-                  </div>
-                  <ChevronRight size={18} color="#c4d1e8" />
-                </button>
-              )
-            })}
+            {nearbyDisplayItems.map(
+              ({ booth, location, distance, locationCodes }) => {
+                const CategoryIcon = getCategoryIcon(booth.category);
+                return (
+                  <button
+                    key={booth.id}
+                    className="booth-list-card"
+                    onClick={() => {
+                      setSelectedBooth(booth);
+                      setTab("map");
+                    }}
+                  >
+                    {distance !== undefined && (
+                      <div className="booth-distance-tag">
+                        {formatDistance(distance)}
+                      </div>
+                    )}
+                    <div className="booth-thumb-avatar">
+                      <CategoryIcon size={20} />
+                    </div>
+                    <div className="booth-info-text">
+                      <b>{booth.name}</b>
+                      <small>
+                        {displayCategory(booth.category)} · {location.location}
+                      </small>
+                    </div>
+                    <ChevronRight size={18} color="#c4d1e8" />
+                  </button>
+                );
+              },
+            )}
           </main>
         )}
 
         {/* Tab 3: Schedule View */}
-        {tab === 'schedule' && (
+        {tab === "schedule" && (
           <main className="schedule-view-container">
             <div className="view-heading schedule-heading">
               <p>LIVE & STAGE</p>
@@ -471,24 +621,74 @@ export default function App() {
             </div>
 
             <DaySwitcher day={day} setDay={setDay} />
-            <ArtistLineup day={day} />
-
-            <div className="schedule-mc-card">
-              <div className="schedule-mc-icon"><Music2 size={16} /></div>
-              <div>
-                <span>STAGE MC</span>
-                <strong>{stageMC.name}</strong>
-                <p>{stageMC.description}</p>
-              </div>
+            <div
+              className="schedule-mode-switch"
+              role="tablist"
+              aria-label="공연 종류 선택"
+            >
+              <button
+                type="button"
+                className={scheduleMode === "stage" ? "active" : ""}
+                onClick={() => setScheduleMode("stage")}
+              >
+                MAIN STAGE
+              </button>
+              <button
+                type="button"
+                className={scheduleMode === "busking" ? "active" : ""}
+                onClick={() => setScheduleMode("busking")}
+              >
+                버스킹
+              </button>
             </div>
 
+            {scheduleMode === "stage" && <ArtistLineup day={day} />}
+
+            {scheduleMode === "stage" && (
+              <div className="schedule-mc-card">
+                <div className="schedule-mc-icon">
+                  <Music2 size={16} />
+                </div>
+                <div>
+                  <span>STAGE MC</span>
+                  <strong>{stageMC.name}</strong>
+                  <p>{stageMC.description}</p>
+                </div>
+              </div>
+            )}
+
+            <div className="schedule-mode-caption">
+              {scheduleMode === "stage"
+                ? "무대 공연 라인업"
+                : "버스킹 공연 라인업"}
+            </div>
             <div className="timeline-list">
               {schedules
-                .filter((s) => s.date === day)
+                .filter(
+                  (s) =>
+                    s.date === day &&
+                    (scheduleMode === "stage"
+                      ? s.title === "무대 공연"
+                      : s.title.startsWith("버스킹")),
+                )
                 .map((item) => {
-                  const isCurrentActive = isEventActive(item.date, item.time)
+                  const isCurrentActive = isEventActive(item.date, item.time);
+                  const performers = item.description?.split(" · ") ?? [];
                   return (
-                    <div key={`${item.date}-${item.time}-${item.title}`} className={`timeline-item ${isCurrentActive ? 'active' : ''}`}>
+                    <div
+                      key={`${item.date}-${item.time}-${item.title}`}
+                      className={`timeline-item timeline-item-clickable ${isCurrentActive ? "active" : ""}`}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => setSelectedSchedule(item)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          setSelectedSchedule(item);
+                        }
+                      }}
+                      aria-label={`${item.title} 상세 보기`}
+                    >
                       <div className="timeline-time">{item.time}</div>
                       <div className="timeline-axis">
                         <div className="timeline-node" />
@@ -496,21 +696,40 @@ export default function App() {
                       <div className="timeline-content">
                         <div className="timeline-header-row">
                           <strong>{item.title}</strong>
-                          {isCurrentActive && <span className="timeline-active-badge">현재 진행 중</span>}
+                          {isCurrentActive && (
+                            <span className="timeline-active-badge">
+                              현재 진행 중
+                            </span>
+                          )}
                         </div>
                         <small>
                           <MapPin size={12} /> {item.place}
                         </small>
+                        <div
+                          className={`schedule-performer-list ${scheduleMode === "busking" ? "busking-performer-list" : ""}`}
+                        >
+                          {performers.map((name, index) => (
+                            <span key={`${name}-${index}`}>
+                              <b>{index + 1}</b>
+                              {name}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  )
+                  );
                 })}
             </div>
 
-            <div className="mascot-callout-banner" style={{ marginTop: '16px' }}>
+            <div
+              className="mascot-callout-banner"
+              style={{ marginTop: "16px" }}
+            >
               <img src={assets.welcome} alt="" className="mascot-callout-img" />
               <div className="mascot-callout-content">
-                <strong className="font-serif">"달빛 아래 특별한 순간들을 놓치지 마세요!"</strong>
+                <strong className="font-serif">
+                  "달빛 아래 특별한 순간들을 놓치지 마세요!"
+                </strong>
                 <small>2026 청파제 청월연 연회 안내</small>
               </div>
             </div>
@@ -518,11 +737,23 @@ export default function App() {
         )}
 
         {/* Tab 4: More / About View */}
-        {tab === 'more' && (
+        {tab === "more" && (
           <main className="nearby-view-container info-page-container">
-            <div className="view-heading">
-              <p>INFORMATION</p>
-              <h2>축제 및 연회 안내</h2>
+            <div className="view-heading info-view-heading">
+              <div className="info-heading-row">
+                <div>
+                  <p>INFORMATION</p>
+                  <h2>축제 안내</h2>
+                </div>
+                <a
+                  className="bug-report-link"
+                  href="mailto:janice@sookmyung.ac.kr?subject=%5B청월연%20축제안내%5D%20버그%20제보"
+                  aria-label="버그 제보"
+                >
+                  <Bug size={12} />
+                  <span>버그</span>
+                </a>
+              </div>
             </div>
             <FestivalInfo />
           </main>
@@ -531,29 +762,29 @@ export default function App() {
         {/* Mobile Bottom Navigation Bar */}
         <nav className="bottom-nav-bar">
           <button
-            className={`nav-tab-btn ${tab === 'map' ? 'active' : ''}`}
-            onClick={() => setTab('map')}
+            className={`nav-tab-btn ${tab === "map" ? "active" : ""}`}
+            onClick={() => setTab("map")}
           >
             <Compass size={20} />
             <span>축제 지도</span>
           </button>
           <button
-            className={`nav-tab-btn ${tab === 'nearby' ? 'active' : ''}`}
-            onClick={() => setTab('nearby')}
+            className={`nav-tab-btn ${tab === "nearby" ? "active" : ""}`}
+            onClick={() => setTab("nearby")}
           >
             <LocateFixed size={20} />
             <span>내 주변</span>
           </button>
           <button
-            className={`nav-tab-btn ${tab === 'schedule' ? 'active' : ''}`}
-            onClick={() => setTab('schedule')}
+            className={`nav-tab-btn ${tab === "schedule" ? "active" : ""}`}
+            onClick={() => setTab("schedule")}
           >
             <CalendarDays size={20} />
             <span>공연 일정</span>
           </button>
           <button
-            className={`nav-tab-btn ${tab === 'more' ? 'active' : ''}`}
-            onClick={() => setTab('more')}
+            className={`nav-tab-btn ${tab === "more" ? "active" : ""}`}
+            onClick={() => setTab("more")}
           >
             <Sparkles size={20} />
             <span>더보기</span>
@@ -562,39 +793,74 @@ export default function App() {
 
         {/* Mobile Sleek Compact Booth Detail Modal */}
         {selectedBooth && selectedLocation && (
-          <div className="modal-backdrop" onClick={() => setSelectedBooth(null)}>
-            <div className="hanji-card-sheet" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="modal-backdrop"
+            onClick={() => setSelectedBooth(null)}
+          >
+            <div
+              className="hanji-card-sheet"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="sheet-grabber-line" />
-              <button className="sheet-close-btn" onClick={() => setSelectedBooth(null)} aria-label="닫기">
+              <button
+                className="sheet-close-btn"
+                onClick={() => setSelectedBooth(null)}
+                aria-label="닫기"
+              >
                 <X size={16} />
               </button>
 
               <div className="hanji-card-meta">
                 <span className="code-pill-tag">{selectedLocation.code}</span>
-                {selectedBooth.category && <span className="category-tag">{selectedBooth.category}</span>}
+                {selectedBooth.category && (
+                  <span className="category-tag">
+                    {displayCategory(selectedBooth.category)}
+                  </span>
+                )}
               </div>
 
               <div className="detail-hero-art">
-                <img src="/assets/decoration/crescent-moon-20260915-040004.png" alt="" />
-                <img className="detail-hero-mascot" src={assets.mapMascot} alt="" />
+                <img
+                  src="/assets/decoration/crescent-moon-20260915-040004.png"
+                  alt=""
+                />
+                <img
+                  className="detail-hero-mascot"
+                  src={assets.mapMascot}
+                  alt=""
+                />
                 <div>
                   <span>{selectedLocation.code}</span>
-                  <strong>청파제 부스</strong>
+                  <strong>{selectedBooth.name}</strong>
                 </div>
               </div>
 
-              <h2>{selectedBooth.name}</h2>
               <div className="location-subtext">
                 <MapPin size={12} />
                 <span>
-                  {selectedLocation.location} · {formatDistance(selectedDistance)}
+                  {selectedLocation.location} ·{" "}
+                  {formatDistance(selectedDistance)}
                 </span>
               </div>
               {selectedBooth.operatingHours && (
-                <div className="booth-hours-line">◷ {selectedBooth.operatingHours}</div>
+                <div className="booth-hours-line">
+                  ◷ {selectedBooth.operatingHours}
+                </div>
               )}
 
-              {selectedBooth.description && <p className="booth-desc-paragraph">{selectedBooth.description}</p>}
+              {selectedBooth.description && (
+                <p className="booth-desc-paragraph">
+                  {selectedBooth.description}
+                </p>
+              )}
+              {!selectedBooth.description &&
+                !selectedBooth.menu?.length &&
+                !selectedBooth.events?.length &&
+                !selectedBooth.operatingHours && (
+                  <p className="booth-info-pending">
+                    상세 정보가 준비 중입니다.
+                  </p>
+                )}
 
               <div className="hanji-details-block">
                 {selectedBooth.menu && selectedBooth.menu.length > 0 && (
@@ -613,20 +879,27 @@ export default function App() {
                 {selectedBooth.events && selectedBooth.events.length > 0 && (
                   <div className="detail-section-box">
                     <h4>❖ EVENT</h4>
-                    <p style={{ margin: 0, fontSize: '12px', color: '#1c2742' }}>
-                      {selectedBooth.events.join(' · ')}
+                    <p
+                      style={{ margin: 0, fontSize: "12px", color: "#1c2742" }}
+                    >
+                      {selectedBooth.events.join(" · ")}
                     </p>
                   </div>
                 )}
+
+                <BoothPromoLinks booth={selectedBooth} />
+
                 <button
                   type="button"
                   className="directions-nav-btn"
-                  onClick={() => { setSelectedBooth(selectedBooth); setTab('map') }}
+                  onClick={() => {
+                    setSelectedBooth(selectedBooth);
+                    setTab("map");
+                  }}
                 >
                   <MapPin size={15} /> 지도에서 위치 보기
                 </button>
               </div>
-
             </div>
           </div>
         )}
@@ -637,34 +910,44 @@ export default function App() {
         {/* Left Sidebar */}
         <aside className="desktop-sidebar">
           <div>
-            <button className="sidebar-header-brand brand-home-button" onClick={() => { setTab('map'); setSelectedBooth(null) }} aria-label="홈으로">
+            <button
+              className="sidebar-header-brand brand-home-button"
+              onClick={() => {
+                setTab("map");
+                setSelectedBooth(null);
+              }}
+              aria-label="홈으로"
+            >
               <h1>青月宴</h1>
               <small>2026 청파제</small>
-              <p>달빛 아래, 우리의 청춘을 채웁니다.</p>
+              <p>
+                숙명의 지나온 120년,
+                <br /> 그리고 앞으로 걸어갈 달
+              </p>
             </button>
 
             <nav className="desktop-nav-menu">
               <button
-                className={`desktop-nav-item ${tab === 'map' ? 'active' : ''}`}
-                onClick={() => setTab('map')}
+                className={`desktop-nav-item ${tab === "map" ? "active" : ""}`}
+                onClick={() => setTab("map")}
               >
                 <Compass size={18} /> 축제 지도
               </button>
               <button
-                className={`desktop-nav-item ${tab === 'schedule' ? 'active' : ''}`}
-                onClick={() => setTab('schedule')}
+                className={`desktop-nav-item ${tab === "schedule" ? "active" : ""}`}
+                onClick={() => setTab("schedule")}
               >
                 <CalendarDays size={18} /> 공연 일정
               </button>
               <button
-                className={`desktop-nav-item ${tab === 'nearby' ? 'active' : ''}`}
-                onClick={() => setTab('nearby')}
+                className={`desktop-nav-item ${tab === "nearby" ? "active" : ""}`}
+                onClick={() => setTab("nearby")}
               >
                 <LocateFixed size={18} /> 내 주변
               </button>
               <button
-                className={`desktop-nav-item ${tab === 'more' ? 'active' : ''}`}
-                onClick={() => setTab('more')}
+                className={`desktop-nav-item ${tab === "more" ? "active" : ""}`}
+                onClick={() => setTab("more")}
               >
                 <Sparkles size={18} /> 더보기
               </button>
@@ -672,9 +955,15 @@ export default function App() {
           </div>
 
           <div className="sidebar-mascot-footer">
-            <img src={assets.welcome} alt="눈송이" className="sidebar-mascot-img" />
+            <img
+              src={assets.welcome}
+              alt="눈송이"
+              className="sidebar-mascot-img"
+            />
             <div className="sidebar-mascot-text font-serif">
-              "달빛이 비추는 곳마다,<br />즐거움이 있어요."
+              "달빛이 비추는 곳마다,
+              <br />
+              즐거움이 있어요."
             </div>
           </div>
         </aside>
@@ -684,12 +973,22 @@ export default function App() {
           {/* Top Bar Filter & Search */}
           <div className="desktop-topbar">
             <div className="topbar-pills-group">
-              {tab === 'map' ? (
+              {tab === "map" ? (
                 <div className="campus-switch" aria-label="캠퍼스 선택">
-                  <button className={campus === 'campus1' ? 'active' : ''} onClick={() => setCampus('campus1')}>1캠퍼스</button>
-                  <button className={campus === 'campus2' ? 'active' : ''} onClick={() => setCampus('campus2')}>2캠퍼스</button>
+                  <button
+                    className={campus === "campus1" ? "active" : ""}
+                    onClick={() => setCampus("campus1")}
+                  >
+                    1캠퍼스
+                  </button>
+                  <button
+                    className={campus === "campus2" ? "active" : ""}
+                    onClick={() => setCampus("campus2")}
+                  >
+                    2캠퍼스
+                  </button>
                 </div>
-              ) : tab === 'schedule' ? (
+              ) : tab === "schedule" ? (
                 <DaySwitcher day={day} setDay={setDay} compact />
               ) : null}
             </div>
@@ -703,24 +1002,40 @@ export default function App() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
               {searchQuery && (
-                <button onClick={() => setSearchQuery('')}>
+                <button onClick={() => setSearchQuery("")}>
                   <X size={14} color="#7fa0d8" />
                 </button>
               )}
               {searchQuery.trim() && (
                 <div className="search-results-popover">
-                  {searchResults.length ? searchResults.map(({ booth, location }) => (
-                    <button key={booth.id} type="button" onClick={() => { rememberBooth(booth); setTab('map'); setSearchQuery('') }}>
-                      <span>{booth.name}</span><small>{booth.category || '부스'} · {location.location}</small>
-                    </button>
-                  )) : <div className="search-empty">검색 결과가 없습니다.</div>}
+                  {searchResults.length ? (
+                    searchResults.map(({ booth, location }) => (
+                      <button
+                        key={booth.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedBooth(booth);
+                          setTab("map");
+                          setSearchQuery("");
+                        }}
+                      >
+                        <span>{booth.name}</span>
+                        <small>
+                          {displayCategory(booth.category) || "부스"} ·{" "}
+                          {location.location}
+                        </small>
+                      </button>
+                    ))
+                  ) : (
+                    <div className="search-empty">검색 결과가 없습니다.</div>
+                  )}
                 </div>
               )}
             </div>
           </div>
 
           {/* Center Dynamic Content */}
-          {tab === 'map' && (
+          {tab === "map" && (
             <div className="map-home-shell">
               <VectorCampusMapView
                 campus={campus}
@@ -728,6 +1043,7 @@ export default function App() {
                 setDay={setDay}
                 visibleItems={visibleItems}
                 selectedBooth={selectedBooth}
+                lastViewedBooth={lastViewedBooth}
                 setSelectedBooth={setSelectedBooth}
                 status={status}
                 coords={coords}
@@ -736,21 +1052,77 @@ export default function App() {
             </div>
           )}
 
-          {tab === 'schedule' && (
+          {tab === "schedule" && (
             <div className="desktop-center-content">
               <div className="view-heading schedule-heading">
                 <p>LIVE & STAGE</p>
                 <h2>공연 / 행사 일정</h2>
-                <small>DAY를 먼저 고르고 오늘의 무대를 확인하세요.</small>
               </div>
-              <ArtistLineup day={day} />
+              <div
+                className="schedule-mode-switch desktop-schedule-mode-switch"
+                role="tablist"
+                aria-label="공연 종류 선택"
+              >
+                <button
+                  type="button"
+                  className={scheduleMode === "stage" ? "active" : ""}
+                  onClick={() => setScheduleMode("stage")}
+                >
+                  MAIN STAGE
+                </button>
+                <button
+                  type="button"
+                  className={scheduleMode === "busking" ? "active" : ""}
+                  onClick={() => setScheduleMode("busking")}
+                >
+                  버스킹
+                </button>
+              </div>
+              {scheduleMode === "stage" && <ArtistLineup day={day} />}
+              {scheduleMode === "stage" && (
+                <div className="schedule-mc-card desktop-schedule-mc-card">
+                  <div className="schedule-mc-icon">
+                    <Music2 size={16} />
+                  </div>
+                  <div>
+                    <span>STAGE MC</span>
+                    <strong>{stageMC.name}</strong>
+                    <p>{stageMC.description}</p>
+                  </div>
+                </div>
+              )}
+              <div className="schedule-mode-caption">
+                {scheduleMode === "stage"
+                  ? "무대 공연 라인업"
+                  : "버스킹 공연 라인업"}
+              </div>
               <div className="timeline-list">
                 {schedules
-                  .filter((s) => s.date === day)
+                  .filter(
+                    (s) =>
+                      s.date === day &&
+                      (scheduleMode === "stage"
+                        ? s.title === "무대 공연"
+                        : s.title.startsWith("버스킹")),
+                  )
                   .map((item) => {
-                    const isCurrentActive = isEventActive(item.date, item.time)
+                    const isCurrentActive = isEventActive(item.date, item.time);
+                    const performers = item.description?.split(" · ") ?? [];
                     return (
-                      <div key={`${item.date}-${item.time}-${item.title}`} className={`timeline-item ${isCurrentActive ? 'active' : ''}`}>
+                      <div
+                        key={`${item.date}-${item.time}-${item.title}`}
+                        className={`timeline-item timeline-item-clickable ${isCurrentActive ? "active" : ""}`}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => setSelectedSchedule(item)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            setSelectedSchedule(item);
+                          }
+                        }}
+                        aria-label={`${item.title} 상세 보기`}
+                      >
                         <div className="timeline-time">{item.time}</div>
                         <div className="timeline-axis">
                           <div className="timeline-node" />
@@ -758,162 +1130,249 @@ export default function App() {
                         <div className="timeline-content">
                           <div className="timeline-header-row">
                             <strong>{item.title}</strong>
-                            {isCurrentActive && <span className="timeline-active-badge">현재 진행 중</span>}
+                            {isCurrentActive && (
+                              <span className="timeline-active-badge">
+                                현재 진행 중
+                              </span>
+                            )}
                           </div>
                           <small>
                             <MapPin size={12} /> {item.place}
                           </small>
-                          {item.description && <p className="timeline-description">{item.description}</p>}
+                          <div
+                            className={`schedule-performer-list ${scheduleMode === "busking" ? "busking-performer-list" : ""}`}
+                          >
+                            {performers.map((name, index) => (
+                              <span key={`${name}-${index}`}>
+                                <b>{index + 1}</b>
+                                {name}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       </div>
-                    )
+                    );
                   })}
               </div>
             </div>
           )}
 
-          {tab === 'nearby' && (
+          {tab === "nearby" && (
             <div className="desktop-center-content">
               <div className="view-heading">
                 <p>내 주변</p>
                 <h2>내 주변 부스</h2>
                 <small>
-                  {status === 'loading' 
-                    ? '위치를 확인하는 중입니다...'
-                    : coords 
-                    ? '현재 위치 기준 가까운 순서' 
-                    : '위치를 허용하면 가까운 부스를 찾을 수 있습니다'}
+                  {status === "loading"
+                    ? "위치를 확인하는 중입니다..."
+                    : !coords
+                      ? "위치를 허용하면 가까운 부스를 찾을 수 있습니다"
+                      : ""}
                 </small>
               </div>
-              {recentBooths.length > 0 && (
-                <section className="recent-booths-section" aria-label="최근 본 부스">
-                  <div className="recent-booths-heading">
-                    <span>RECENT</span>
-                    <strong>최근 본 부스</strong>
-                  </div>
-                  <div className="recent-booths-list">
-                    {recentBooths.map((booth) => {
-                      const location = locations.find((item) => item.id === booth.locationId)
-                      if (!location) return null
-                      return (
-                        <button key={booth.id} type="button" className="recent-booth-chip" onClick={() => { rememberBooth(booth); setTab('map') }}>
-                          <span>{location.code}</span>
-                          <strong>{booth.name}</strong>
-                        </button>
-                      )
-                    })}
-                  </div>
-                </section>
-              )}
               <div className="nearby-toolbar">
-                <div className="nearby-filter-row" role="tablist" aria-label="부스 카테고리 필터">
-                  {([
-                    ['all', '전체'],
-                    ['food', '음식'],
-                    ['experience', '체험'],
-                    ['store', '상점'],
-                  ] as const).map(([key, label]) => (
+                <div
+                  className="nearby-filter-row"
+                  role="tablist"
+                  aria-label="부스 카테고리 필터"
+                >
+                  {(
+                    [
+                      ["all", "전체"],
+                      ["food", "음식"],
+                      ["experience", "체험"],
+                      ["store", "굿즈"],
+                    ] as const
+                  ).map(([key, label]) => (
                     <button
                       key={key}
                       type="button"
-                      className={`nearby-filter-chip ${nearbyFilter === key ? 'active' : ''}`}
+                      className={`nearby-filter-chip ${nearbyFilter === key ? "active" : ""}`}
                       onClick={() => setNearbyFilter(key)}
-                    >{label}</button>
+                    >
+                      {label}
+                    </button>
                   ))}
                 </div>
-                <button className="location-permission-btn" onClick={requestLocation} disabled={status === 'loading'}>
+                <button
+                  className="location-permission-btn"
+                  onClick={requestLocation}
+                  disabled={status === "loading"}
+                >
                   <LocateFixed size={13} />
-                  <span>{status === 'loading' ? '확인 중' : coords ? '위치 새로고침' : '위치 권한'}</span>
+                  <span>
+                    {status === "loading"
+                      ? "확인 중"
+                      : coords
+                        ? "위치 새로고침"
+                        : "위치 권한"}
+                  </span>
                 </button>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '10px', marginTop: '12px' }}>
-                {nearbyDisplayItems.map(({ booth, location, distance, locationCodes }) => {
-                  const CategoryIcon = getCategoryIcon(booth.category)
-                  return (
-                    <button
-                      key={booth.id}
-                      className="booth-list-card"
-                      onClick={() => { rememberBooth(booth); setTab('map') }}
-                    >
-                      {distance !== undefined && <div className="booth-distance-tag">{formatDistance(distance)}</div>}
-                      <div className="booth-thumb-avatar">
-                        <CategoryIcon size={16} />
-                      </div>
-                      <div className="booth-info-text">
-                        <b>{booth.name}</b>
-                        <small>
-                          {(locationCodes || [location.code]).join(' · ')} · {booth.category}
-                        </small>
-                      </div>
-                      <ChevronRight size={16} color="#a1b2d4" />
-                    </button>
-                  )
-                })}
+              <div className="nearby-booth-grid" style={{ marginTop: "12px" }}>
+                {nearbyDisplayItems.map(
+                  ({ booth, location, distance, locationCodes }) => {
+                    const CategoryIcon = getCategoryIcon(booth.category);
+                    return (
+                      <button
+                        key={booth.id}
+                        className="booth-list-card"
+                        onClick={() => {
+                          setSelectedBooth(booth);
+                          setTab("map");
+                        }}
+                      >
+                        {distance !== undefined && (
+                          <div className="booth-distance-tag">
+                            {formatDistance(distance)}
+                          </div>
+                        )}
+                        <div className="booth-thumb-avatar">
+                          <CategoryIcon size={16} />
+                        </div>
+                        <div className="booth-info-text">
+                          <b>{booth.name}</b>
+                          <small>
+                            {(locationCodes || [location.code]).join(" · ")} ·{" "}
+                            {displayCategory(booth.category)}
+                          </small>
+                        </div>
+                        <ChevronRight size={16} color="#a1b2d4" />
+                      </button>
+                    );
+                  },
+                )}
               </div>
             </div>
           )}
 
-          {tab === 'more' && (
+          {tab === "more" && (
             <div className="desktop-center-content info-page-container">
-              <div className="view-heading">
-                <p>INFORMATION</p>
-                <h2>축제 및 연회 안내</h2>
+              <div className="view-heading info-view-heading">
+                <div className="info-heading-row">
+                  <div>
+                    <p>INFORMATION</p>
+                    <h2>축제 안내</h2>
+                  </div>
+                  <a
+                    className="bug-report-link"
+                    href="mailto:janice@sookmyung.ac.kr?subject=%5B청월연%20축제안내%5D%20버그%20제보"
+                    aria-label="버그 제보"
+                  >
+                    <Bug size={12} />
+                    <span>버그</span>
+                  </a>
+                </div>
               </div>
-              <FestivalInfo compact />
+              <FestivalInfo />
             </div>
           )}
         </main>
 
         {/* Right Panel (Booths List & Detail Hanji Card) */}
-        <section className={`desktop-right-panel ${!selectedBooth ? 'desktop-right-panel-hidden' : ''}`} onClick={() => selectedBooth && setSelectedBooth(null)}>
+        <section
+          className={`desktop-right-panel ${!selectedBooth ? "desktop-right-panel-hidden" : ""}`}
+          onClick={() => selectedBooth && setSelectedBooth(null)}
+        >
           {selectedBooth && selectedLocation ? (
             /* Selected Booth Sleek Compact Detail Card Panel */
-            <div className="hanji-card-panel" style={{ padding: '18px' }} onClick={(event) => event.stopPropagation()}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+            <div
+              className="hanji-card-panel"
+              style={{ padding: "18px" }}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "10px",
+                }}
+              >
                 <div className="hanji-card-meta" style={{ margin: 0 }}>
                   <span className="code-pill-tag">{selectedLocation.code}</span>
-                  <span className="category-tag">{selectedBooth.category}</span>
+                  <span className="category-tag">
+                    {displayCategory(selectedBooth.category)}
+                  </span>
                 </div>
                 <button
                   onClick={() => setSelectedBooth(null)}
-                  style={{ padding: '3px 7px', borderRadius: '6px', fontSize: '11px', color: '#666', background: 'rgba(0,0,0,0.06)' }}
+                  style={{
+                    padding: "3px 7px",
+                    borderRadius: "6px",
+                    fontSize: "11px",
+                    color: "#666",
+                    background: "rgba(0,0,0,0.06)",
+                  }}
                 >
                   닫기
                 </button>
               </div>
 
               <div className="detail-hero-art">
-                <img src="/assets/decoration/crescent-moon-20260915-040004.png" alt="" />
-                <img className="detail-hero-mascot" src={assets.mapMascot} alt="" />
+                <img
+                  src="/assets/decoration/crescent-moon-20260915-040004.png"
+                  alt=""
+                />
+                <img
+                  className="detail-hero-mascot"
+                  src={assets.mapMascot}
+                  alt=""
+                />
                 <div>
                   <span>{selectedLocation.code}</span>
-                  <strong>청파제 부스</strong>
+                  <strong>{selectedBooth.name}</strong>
                 </div>
               </div>
-              <h2 style={{ fontSize: '20px', margin: '4px 0' }}>{selectedBooth.name}</h2>
-              <div className="location-subtext" style={{ fontSize: '11px', marginBottom: '6px' }}>
+              <div
+                className="location-subtext"
+                style={{ fontSize: "11px", marginBottom: "6px" }}
+              >
                 <MapPin size={12} />
                 <span>
-                  {selectedLocation.location} · {formatDistance(selectedDistance)}
+                  {selectedLocation.location} ·{" "}
+                  {formatDistance(selectedDistance)}
                 </span>
               </div>
               {selectedBooth.operatingHours && (
-                <div className="booth-hours-line">◷ {selectedBooth.operatingHours}</div>
+                <div className="booth-hours-line">
+                  ◷ {selectedBooth.operatingHours}
+                </div>
               )}
 
               {selectedBooth.description && (
-                <p className="booth-desc-paragraph" style={{ fontSize: '12px', marginBottom: '14px' }}>
+                <p
+                  className="booth-desc-paragraph"
+                  style={{ fontSize: "12px", marginBottom: "14px" }}
+                >
                   {selectedBooth.description}
                 </p>
               )}
+              {!selectedBooth.description &&
+                !selectedBooth.menu?.length &&
+                !selectedBooth.events?.length &&
+                !selectedBooth.operatingHours && (
+                  <p className="booth-info-pending">
+                    상세 정보가 준비 중입니다.
+                  </p>
+                )}
 
               <div className="hanji-details-block" style={{ flex: 1 }}>
                 {selectedBooth.menu && selectedBooth.menu.length > 0 && (
-                  <div className="detail-section-box" style={{ padding: '10px 12px' }}>
-                    <h4 style={{ fontSize: '10px', marginBottom: '4px' }}>❖ MENU</h4>
+                  <div
+                    className="detail-section-box"
+                    style={{ padding: "10px 12px" }}
+                  >
+                    <h4 style={{ fontSize: "10px", marginBottom: "4px" }}>
+                      ❖ MENU
+                    </h4>
                     <div className="menu-list-items">
                       {selectedBooth.menu.map((item, idx) => (
-                        <div key={idx} className="menu-item-row" style={{ fontSize: '12px' }}>
+                        <div
+                          key={idx}
+                          className="menu-item-row"
+                          style={{ fontSize: "12px" }}
+                        >
                           <span>• {item}</span>
                         </div>
                       ))}
@@ -922,29 +1381,107 @@ export default function App() {
                 )}
 
                 {selectedBooth.events && selectedBooth.events.length > 0 && (
-                  <div className="detail-section-box" style={{ padding: '10px 12px' }}>
-                    <h4 style={{ fontSize: '10px', marginBottom: '4px' }}>❖ EVENT</h4>
-                    <p style={{ margin: 0, fontSize: '12px', color: '#1c2742' }}>
-                      {selectedBooth.events.join(' · ')}
+                  <div
+                    className="detail-section-box"
+                    style={{ padding: "10px 12px" }}
+                  >
+                    <h4 style={{ fontSize: "10px", marginBottom: "4px" }}>
+                      ❖ EVENT
+                    </h4>
+                    <p
+                      style={{ margin: 0, fontSize: "12px", color: "#1c2742" }}
+                    >
+                      {selectedBooth.events.join(" · ")}
                     </p>
                   </div>
                 )}
+
+                <BoothPromoLinks booth={selectedBooth} />
+
                 <button
                   type="button"
                   className="directions-nav-btn"
                   onClick={() => {
-                  setSelectedBooth(selectedBooth)
-                  setTab('map')
-                }}
+                    setSelectedBooth(selectedBooth);
+                    setTab("map");
+                  }}
                 >
                   <MapPin size={14} /> 지도에서 위치 보기
                 </button>
               </div>
-
             </div>
-          ) : null}        </section>
+          ) : null}{" "}
+        </section>
+
+        {selectedSchedule && (
+          <div
+            className="schedule-detail-backdrop"
+            onClick={() => setSelectedSchedule(null)}
+          >
+            <div
+              className="schedule-detail-modal"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <button
+                type="button"
+                className="schedule-detail-close"
+                onClick={() => setSelectedSchedule(null)}
+                aria-label="공연 상세 닫기"
+              >
+                <X size={16} />
+              </button>
+              <div className="schedule-detail-kicker">
+                {selectedSchedule.date === "day1"
+                  ? "DAY 1 · 9.16 수"
+                  : "DAY 2 · 9.17 목"}
+              </div>
+              <h2>{selectedSchedule.title}</h2>
+              <div className="schedule-detail-meta">
+                <div>
+                  <CalendarDays size={14} />
+                  <span>
+                    {selectedSchedule.date === "day1"
+                      ? "9월 16일(수)"
+                      : "9월 17일(목)"}
+                  </span>
+                </div>
+                <div>
+                  <Music2 size={14} />
+                  <span>
+                    {selectedSchedule.time === "미정"
+                      ? "미정"
+                      : `${selectedSchedule.time} ~`}
+                  </span>
+                </div>
+                <div>
+                  <MapPin size={14} />
+                  <span>{selectedSchedule.place}</span>
+                </div>
+              </div>
+              <div className="schedule-detail-section">
+                <span>PROGRAM</span>
+                <div className="schedule-detail-program-list">
+                  {(
+                    selectedSchedule.description ||
+                    "공연 정보는 추후 업데이트됩니다."
+                  )
+                    .split(" · ")
+                    .map((name, index) => (
+                      <div key={`${name}-${index}`}>
+                        <b>{index + 1}</b>
+                        <span>{name}</span>
+                      </div>
+                    ))}
+                </div>
+              </div>
+              <div className="schedule-detail-note">
+                공연 시간 및 진행 내용은 현장 상황에 따라 변동될 수 있습니다.
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
-  )
+  );
 }
 

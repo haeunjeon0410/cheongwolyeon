@@ -1,5 +1,3 @@
-@import "tailwindcss";
-
 :root {
   --font-serif: 'Noto Serif KR', 'Gowun Batang', serif;
   --font-sans: 'Noto Sans KR', 'Pretendard', system-ui, -apple-system, sans-serif;
@@ -1393,24 +1391,24 @@ input {
 /* 부스 상세는 우측 고정 패널 대신 작은 중앙 모달로 표시 */
 .desktop-right-panel:has(.hanji-card-panel) {
   position: fixed;
-  inset: 0;
+  top: 28px;
+  left: 28px;
+  right: auto;
+  bottom: 28px;
   z-index: 100;
-  display: grid;
-  place-items: center;
-  width: 100vw;
-  height: 100dvh;
-  padding: 16px;
-  background: rgba(2, 10, 28, .72);
-  backdrop-filter: blur(5px);
+  width: min(390px, calc(100vw - 56px));
+  background: transparent;
+  pointer-events: none;
 }
 .desktop-right-panel:has(.hanji-card-panel) .hanji-card-panel {
-  width: min(360px, calc(100vw - 32px));
-  height: auto !important;
-  max-height: min(520px, calc(100dvh - 32px));
+  width: 100%;
+  height: 100% !important;
+  max-height: none;
   overflow-y: auto;
-  border-radius: 18px;
-  padding: 14px !important;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, .45);
+  border-radius: 20px;
+  padding: 20px !important;
+  box-shadow: 20px 10px 70px rgba(0, 0, 0, .38);
+  pointer-events: auto;
 }
 .desktop-right-panel:has(.hanji-card-panel) .hanji-card-panel h2 {
   font-size: 22px !important;
@@ -1554,6 +1552,8 @@ input {
 }
 
 @media (max-width: 979px) {
+  .concept-campus-grid { grid-template-columns: 1fr; }
+  .concept-campus-grid > div { padding: 11px; }
   .app-container {
     width: min(100%, 480px);
   }
@@ -2259,6 +2259,15 @@ body::before {
 .info-disclosure[open] summary span { transform: rotate(45deg); }
 .info-disclosure p { margin: 8px 0 3px; color: #9eafcf; font-size: 11px; line-height: 1.7; }
 .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.concept-copy { display: flex; flex-direction: column; gap: 8px; }
+.concept-copy p { margin: 0; color: #aebdd5; font-size: 11px; line-height: 1.8; }
+.concept-copy strong { color: #ead18a; font-weight: 700; }
+.concept-campus-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+.concept-campus-grid > div { padding: 12px; border: 1px solid rgba(212,175,55,.13); border-radius: 12px; background: rgba(255,255,255,.025); }
+.concept-campus-grid span { display: block; margin-bottom: 5px; color: #d8b85c; font-size: 8px; letter-spacing: .15em; }
+.concept-campus-grid strong { display: block; color: #f1e7ca; font-family: var(--font-serif); font-size: 14px; }
+.concept-campus-grid p { margin: 5px 0 0; color: #8fa1c3; font-size: 10px; line-height: 1.65; }
 .info-muted { margin: 0 0 9px; color: #91a2c4; font-size: 10px; line-height: 1.6; }
 .mini-tag-list { display: flex; flex-wrap: wrap; gap: 5px; }
 .mini-tag-list span {
@@ -3024,7 +3033,7 @@ button { -webkit-tap-highlight-color: transparent; }
 
 /* Schedule is a timeline, not a collection of cards. */
 .artist-lineup {
-  padding: 16px 0 !important;
+  padding: 18px 16px !important;
   border-top: 1px solid rgba(255,255,255,.08) !important;
   border-bottom: 1px solid rgba(255,255,255,.08) !important;
   background: transparent !important;
@@ -3118,14 +3127,16 @@ button { -webkit-tap-highlight-color: transparent; }
   }
   .desktop-right-panel {
     top: 28px !important;
-    right: 28px !important;
+    left: 28px !important;
+    right: auto !important;
+    bottom: 28px !important;
     width: min(390px, calc(100vw - 56px)) !important;
-    height: calc(100dvh - 56px) !important;
-    border: 1px solid rgba(212,175,55,.18) !important;
+    height: auto !important;
+    border: 0 !important;
     border-radius: 22px !important;
-    box-shadow: -24px 10px 70px rgba(0,0,0,.38) !important;
+    box-shadow: none !important;
   }
-  .desktop-right-panel .hanji-card-panel { padding: 26px !important; }
+  .desktop-right-panel .hanji-card-panel { padding: 22px !important; }
 }
 
 @media (max-width: 979px) {
@@ -3367,65 +3378,6 @@ button { -webkit-tap-highlight-color: transparent; }
   }
 }
 
-/* v10 — selected marker sits above hotspot layer + recent viewed booths */
-.recent-booths-section {
-  margin: 4px 0 10px;
-}
-.recent-booths-heading {
-  display: flex;
-  align-items: baseline;
-  gap: 7px;
-  margin-bottom: 7px;
-}
-.recent-booths-heading span {
-  font-size: 8px;
-  letter-spacing: .16em;
-  color: #a58a4a;
-  font-weight: 800;
-}
-.recent-booths-heading strong {
-  font-size: 12px;
-  color: #263653;
-}
-.recent-booths-list {
-  display: flex;
-  gap: 7px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.recent-booths-list::-webkit-scrollbar { display: none; }
-.recent-booth-chip {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  min-width: 0;
-  padding: 8px 10px;
-  border: 1px solid rgba(139,112,54,.13);
-  border-radius: 10px;
-  background: rgba(255,255,255,.62);
-  color: #253452;
-  text-align: left;
-  cursor: pointer;
-}
-.recent-booth-chip span {
-  font-size: 8px;
-  font-weight: 800;
-  color: #9b7d35;
-}
-.recent-booth-chip strong {
-  max-width: 150px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 10px;
-}
-@media (max-width: 979px) {
-  .recent-booths-section { margin: 8px 0 12px; }
-  .recent-booth-chip { padding: 9px 11px; }
-}
-
-
 /* v11 — selected marker: sized to the actual booth hotspot, never the whole map */
 .selected-booth-marker {
   position: absolute !important;
@@ -3454,3 +3406,988 @@ button { -webkit-tap-highlight-color: transparent; }
   z-index: 490 !important;
 }
 .selected-booth-marker-layer .selected-booth-marker { z-index: 500 !important; }
+
+/* ================================================================
+   v12 — responsive detail polish + persistent selected marker
+   ================================================================ */
+.selected-booth-marker-layer {
+  position: absolute !important;
+  inset: 0 !important;
+  pointer-events: none !important;
+  z-index: 600 !important;
+  overflow: visible !important;
+}
+.selected-booth-marker {
+  position: absolute !important;
+  width: clamp(30px, 3.4vw, 46px) !important;
+  height: auto !important;
+  aspect-ratio: 1 / 1 !important;
+  object-fit: contain !important;
+  transform: translate(-50%, -100%) !important;
+  transform-origin: 50% 100% !important;
+  pointer-events: none !important;
+  z-index: 601 !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  opacity: 1 !important;
+  filter: drop-shadow(0 3px 5px rgba(0,0,0,.45)) !important;
+  animation: selectedMarkerFloat .22s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes selectedMarkerFloat {
+  from { opacity: 0; transform: translate(-50%, -86%) scale(.72); }
+  to { opacity: 1; transform: translate(-50%, -100%) scale(1); }
+}
+
+/* The mobile search is anchored to the viewport so suggestion lists can never
+   be clipped by the narrow app shell. */
+@media (max-width: 979px) {
+  .mobile-search-overlay {
+    position: fixed !important;
+    top: 60px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: min(100vw - 20px, 540px) !important;
+    padding: 9px 0 10px !important;
+    background: rgba(6,18,48,.96) !important;
+    border: 0 !important;
+    border-bottom: 1px solid rgba(212,175,55,.18) !important;
+    box-shadow: 0 12px 28px rgba(0,0,0,.25) !important;
+    z-index: 1000 !important;
+  }
+  .mobile-search-box {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    padding: 9px 12px !important;
+    border-radius: 13px !important;
+  }
+  .mobile-search-box input {
+    min-width: 0 !important;
+    width: 100% !important;
+    font-size: 12px !important;
+  }
+  .mobile-search-results {
+    position: absolute !important;
+    top: calc(100% + 7px) !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-height: min(52dvh, 360px) !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    box-sizing: border-box !important;
+  }
+  .mobile-search-results button {
+    min-width: 0 !important;
+  }
+  .selected-booth-marker {
+    width: 36px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .mobile-search-overlay {
+    width: calc(100vw - 16px) !important;
+  }
+  .mobile-search-box {
+    padding: 8px 10px !important;
+  }
+  .selected-booth-marker {
+    width: 32px !important;
+  }
+}
+
+/* Desktop detail: a compact floating side card rather than a full-height panel. */
+@media (min-width: 980px) {
+  .desktop-right-panel:has(.hanji-card-panel) {
+    position: fixed !important;
+    top: 50% !important;
+    right: clamp(18px, 2.2vw, 34px) !important;
+    left: auto !important;
+    bottom: auto !important;
+    inset: auto clamp(18px, 2.2vw, 34px) auto auto !important;
+    transform: translateY(-50%) !important;
+    display: block !important;
+    width: min(440px, 34vw) !important;
+    height: min(760px, calc(100dvh - 48px)) !important;
+    max-height: calc(100dvh - 48px) !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border-radius: 24px !important;
+    background: rgba(6,18,48,.88) !important;
+    border: 1px solid rgba(212,175,55,.20) !important;
+    box-shadow: -18px 18px 65px rgba(0,0,0,.38) !important;
+    backdrop-filter: blur(14px) !important;
+  }
+  .desktop-right-panel:has(.hanji-card-panel) .hanji-card-panel {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    box-sizing: border-box !important;
+    overflow-y: auto !important;
+    padding: 24px !important;
+    border-radius: 24px !important;
+  }
+  .desktop-right-panel:has(.hanji-card-panel) .detail-hero-art {
+    min-height: 126px !important;
+  }
+  .desktop-right-panel:has(.hanji-card-panel) .detail-hero-mascot {
+    width: 92px !important;
+    height: 92px !important;
+  }
+}
+
+@media (min-width: 980px) and (max-width: 1180px) {
+  .desktop-right-panel:has(.hanji-card-panel) {
+    width: min(400px, 38vw) !important;
+  }
+  .desktop-right-panel:has(.hanji-card-panel) .hanji-card-panel {
+    padding: 20px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .selected-booth-marker { animation: none !important; }
+}
+
+
+/* Booth promotion links */
+.booth-promo-links {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(35, 51, 84, .10);
+  border-radius: 12px;
+  background: rgba(255,255,255,.62);
+}
+
+.booth-promo-heading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  color: #66738e;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+.booth-promo-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.booth-promo-btn {
+  min-width: 0;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 8px;
+  border-radius: 9px;
+  border: 1px solid rgba(28, 39, 66, .12);
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  transition: transform .15s ease, background .15s ease, border-color .15s ease;
+}
+
+.booth-promo-btn:hover {
+  transform: translateY(-1px);
+}
+
+.booth-promo-btn.instagram {
+  color: #263352;
+  background: rgba(255,255,255,.9);
+}
+
+.booth-promo-btn.everytime {
+  color: #263352;
+  background: rgba(248,244,228,.9);
+}
+
+.instagram-mark {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+}
+
+.everytime-mark {
+  width: 17px;
+  height: 17px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 17px;
+  border-radius: 5px;
+  background: #263352;
+  color: #f8df97;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+@media (max-width: 380px) {
+  .booth-promo-buttons {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 980px) {
+  .desktop-right-panel .booth-promo-links {
+    margin-top: 8px;
+    padding: 8px 10px;
+  }
+
+  .desktop-right-panel .booth-promo-btn {
+    min-height: 32px;
+    font-size: 10px;
+  }
+}
+
+
+/* 홍보글 단일 CTA: 인스타 우선, 없으면 에브리타임으로 연결 */
+.booth-promo-links {
+  display: flex;
+  width: 100%;
+  margin-top: 12px;
+}
+.booth-promo-links .booth-promo-btn {
+  width: 100%;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid rgba(244, 223, 151, 0.24);
+  border-radius: 12px;
+  padding: 10px 14px;
+  text-decoration: none;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+.booth-promo-links .booth-promo-btn.instagram {
+  color: #f8e8b0;
+  background: rgba(255, 255, 255, 0.055);
+}
+.booth-promo-links .booth-promo-btn.everytime {
+  color: #f8e8b0;
+  background: rgba(255, 255, 255, 0.055);
+}
+.booth-promo-links .booth-promo-btn:hover {
+  background: rgba(244, 223, 151, 0.10);
+  border-color: rgba(244, 223, 151, 0.42);
+}
+.booth-promo-links .everytime-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  border-radius: 4px;
+  border: 1px solid currentColor;
+  font-size: 11px;
+  line-height: 1;
+}
+
+
+/* v16 — clearer search + compact contact area */
+.desktop-search-box input::placeholder {
+  color: rgba(205, 218, 240, .78) !important;
+  opacity: 1 !important;
+}
+.desktop-search-box > svg {
+  color: #a9c0e2 !important;
+  flex: 0 0 auto;
+}
+.contact-list { display: flex; flex-direction: column; gap: 8px; }
+.contact-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  padding: 11px 12px; border: 1px solid rgba(35,51,84,.09); border-radius: 12px;
+  background: rgba(255,255,255,.42);
+}
+.contact-row b { display: block; font-size: 12px; color: #1d2943; }
+.contact-row p { margin: 3px 0 0; font-size: 10px; line-height: 1.5; color: #71809a; }
+.contact-action {
+  flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center;
+  min-width: 42px; padding: 6px 9px; border-radius: 999px;
+  border: 1px solid rgba(212,175,55,.35); background: rgba(212,175,55,.10);
+  color: #80631d; font-size: 10px; text-decoration: none;
+}
+.contact-action-developer { opacity: .72; }
+@media (max-width: 380px) {
+  .contact-row { align-items: flex-start; }
+  .contact-row p { max-width: 210px; }
+}
+
+
+/* 정보가 아직 없는 부스도 상세 카드가 비어 보이지 않도록 하는 최소 안내 */
+.booth-info-pending {
+  margin: 4px 0 14px;
+  padding: 10px 12px;
+  border-top: 1px solid rgba(28,39,66,.10);
+  border-bottom: 1px solid rgba(28,39,66,.10);
+  color: rgba(28,39,66,.56);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+
+/* ================================================================
+   v23 — restore earlier copy, compact desktop detail, precise marker,
+   and quiet contact area
+   ================================================================ */
+@media (min-width: 980px) {
+  .desktop-right-panel:has(.hanji-card-panel) {
+    position: fixed !important;
+    top: 28px !important;
+    right: 28px !important;
+    left: auto !important;
+    bottom: auto !important;
+    inset: 28px 28px auto auto !important;
+    transform: none !important;
+    width: min(390px, calc(100vw - 56px)) !important;
+    height: calc(100dvh - 56px) !important;
+    max-height: calc(100dvh - 56px) !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border-radius: 22px !important;
+    background: rgba(6,18,48,.88) !important;
+    border: 1px solid rgba(212,175,55,.18) !important;
+    box-shadow: -24px 10px 70px rgba(0,0,0,.38) !important;
+    backdrop-filter: blur(14px) !important;
+  }
+  .desktop-right-panel:has(.hanji-card-panel) .hanji-card-panel {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    box-sizing: border-box !important;
+    overflow-y: auto !important;
+    padding: 26px !important;
+    border-radius: 22px !important;
+  }
+  .desktop-right-panel:has(.hanji-card-panel) .detail-hero-art {
+    min-height: 112px !important;
+  }
+  .desktop-right-panel:has(.hanji-card-panel) .detail-hero-mascot {
+    width: 82px !important;
+    height: 82px !important;
+  }
+  .desktop-right-panel:has(.hanji-card-panel) .hanji-card-panel h2 {
+    font-size: 24px !important;
+    margin: 0 0 7px !important;
+  }
+}
+
+/* Selected booth marker: centered over the actual booth, with a small gap. */
+.selected-booth-marker {
+  width: 30px !important;
+  transform: translate(-50%, -100%) !important;
+}
+
+@media (max-width: 979px) {
+  .selected-booth-marker { width: 28px !important; }
+}
+
+/* ================================================================
+   v25 — fix booth-click runtime error, left desktop detail,
+   remove duplicate booth title, and center selected marker above booth
+   ================================================================ */
+@media (min-width: 980px) {
+  .desktop-right-panel:has(.hanji-card-panel) {
+    position: fixed !important;
+    top: 28px !important;
+    left: 28px !important;
+    right: auto !important;
+    bottom: 28px !important;
+    inset: 28px auto 28px 28px !important;
+    width: min(390px, calc(100vw - 56px)) !important;
+    height: auto !important;
+    max-height: calc(100dvh - 56px) !important;
+    z-index: 100 !important;
+    pointer-events: none !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+  .desktop-right-panel:has(.hanji-card-panel) .hanji-card-panel {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    box-sizing: border-box !important;
+    overflow-y: auto !important;
+    padding: 20px !important;
+    border-radius: 20px !important;
+    pointer-events: auto !important;
+    box-shadow: 20px 10px 70px rgba(0,0,0,.38) !important;
+  }
+}
+
+/* The hero already contains the actual booth name; don't duplicate it below. */
+.hanji-card-sheet > h2,
+.hanji-card-panel > h2 { display: none !important; }
+
+/* Marker anchor = exact horizontal center of the booth, tip slightly above it. */
+.selected-booth-marker {
+  width: 30px !important;
+  height: auto !important;
+  transform: translate(-50%, -100%) !important;
+  transform-origin: center bottom !important;
+  pointer-events: none !important;
+}
+@media (max-width: 979px) {
+  .selected-booth-marker { width: 28px !important; }
+}
+
+
+/* ================================================================
+   v27 — final polish: intro typography, responsive spacing, left detail panel
+   ================================================================ */
+.intro-copy {
+  max-width: 420px !important;
+  overflow-wrap: keep-all !important;
+  word-break: keep-all !important;
+}
+.intro-copy span {
+  display: block;
+}
+
+/* Keep the selected booth detail visually close to the map, but never let it
+   become a full-height second app pane. */
+@media (min-width: 980px) {
+  .desktop-right-panel:has(.hanji-card-panel) {
+    left: clamp(18px, 2.2vw, 34px) !important;
+    right: auto !important;
+    inset: auto auto auto clamp(18px, 2.2vw, 34px) !important;
+    top: 50% !important;
+    bottom: auto !important;
+    transform: translateY(-50%) !important;
+    width: min(400px, 31vw) !important;
+    height: min(720px, calc(100dvh - 56px)) !important;
+    max-height: calc(100dvh - 56px) !important;
+    border-radius: 22px !important;
+    box-shadow: 18px 18px 65px rgba(0,0,0,.34) !important;
+  }
+}
+
+/* Desktop: make the intro copy read as intentional two-line editorial type,
+   with the mascot occupying its own visual column instead of crossing the copy. */
+@media (min-width: 980px) {
+  .intro-content {
+    width: min(760px, 72vw) !important;
+  }
+  .intro-copy {
+    width: 410px !important;
+    max-width: 410px !important;
+    margin-top: 30px !important;
+    font-size: clamp(16px, 1.25vw, 19px) !important;
+    line-height: 1.75 !important;
+    letter-spacing: -.015em !important;
+  }
+  .intro-copy span + span {
+    margin-top: 2px;
+  }
+}
+
+/* Mobile: change the composition rather than squeezing the desktop layout.
+   The mascot sits between the title and copy, so the long Korean copy can
+   wrap naturally on 320–540px screens without crossing any artwork. */
+@media (max-width: 979px) {
+  .intro-content {
+    position: absolute !important;
+    left: 50% !important;
+    top: 17vh !important;
+    transform: translateX(-50%) !important;
+    width: min(88vw, 420px) !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+  .intro-content h1,
+  .intro-title,
+  .intro-kicker,
+  .intro-copy,
+  .intro-continue { margin-left: 0 !important; }
+  .intro-mascot {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    width: clamp(132px, 38vw, 170px) !important;
+    height: clamp(132px, 38vw, 170px) !important;
+    margin: 18px 0 0 !important;
+  }
+  .intro-copy {
+    width: min(92%, 330px) !important;
+    max-width: 330px !important;
+    margin: 18px auto 0 !important;
+    font-size: clamp(13px, 3.8vw, 16px) !important;
+    line-height: 1.8 !important;
+    letter-spacing: -.02em !important;
+  }
+  .intro-copy span + span { margin-top: 2px; }
+  .intro-continue {
+    margin-top: 12px !important;
+    max-width: 280px !important;
+    line-height: 1.6 !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .intro-content { top: 14vh !important; }
+  .intro-mascot { width: 124px !important; height: 124px !important; }
+  .intro-copy {
+    width: min(94%, 300px) !important;
+    font-size: 13px !important;
+    line-height: 1.75 !important;
+  }
+}
+
+/* Search should never be wider than the phone viewport. */
+@media (max-width: 979px) {
+  .mobile-search-overlay {
+    width: calc(100vw - 16px) !important;
+    max-width: 540px !important;
+  }
+  .mobile-search-box {
+    width: 100% !important;
+  }
+  .mobile-search-box input {
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+  }
+  .mobile-search-results {
+    max-height: min(50dvh, 340px) !important;
+  }
+}
+
+
+/* ================================================================
+   v29 — final data/map polish
+   ================================================================ */
+/* The marker asset is cropped to its visible bounds. Its bottom tip is
+   anchored to the actual top edge of the selected booth hotspot. */
+.selected-booth-marker {
+  width: clamp(34px, 3.2vw, 44px) !important;
+  height: auto !important;
+  aspect-ratio: auto !important;
+  transform: translate(-50%, -100%) !important;
+  transform-origin: 50% 100% !important;
+}
+@media (max-width: 979px) {
+  .selected-booth-marker { width: 32px !important; }
+}
+
+/* Nearby desktop: three clear columns instead of one continuous visual wall. */
+@media (min-width: 980px) {
+  .nearby-booth-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    column-gap: 20px !important;
+    row-gap: 0 !important;
+  }
+  .nearby-booth-grid .booth-list-card {
+    min-width: 0 !important;
+    border-bottom: 1px solid rgba(255,255,255,.075) !important;
+  }
+  .nearby-booth-grid .booth-list-card:nth-child(3n + 2),
+  .nearby-booth-grid .booth-list-card:nth-child(3n + 3) {
+    border-left: 1px solid rgba(255,255,255,.075) !important;
+    padding-left: 20px !important;
+  }
+}
+@media (max-width: 979px) {
+  .nearby-booth-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+  }
+}
+
+/* The booth name is the most important piece of information in the detail
+   header, so it should read immediately even on a compact side panel. */
+.detail-hero-art > div strong {
+  font-size: clamp(18px, 1.45vw, 23px) !important;
+  line-height: 1.25 !important;
+  letter-spacing: -.025em !important;
+}
+@media (max-width: 979px) {
+  .detail-hero-art > div strong {
+    font-size: clamp(19px, 5.3vw, 23px) !important;
+  }
+}
+.detail-hero-art {
+  padding: 13px 15px !important;
+  gap: 13px !important;
+}
+.detail-hero-mascot {
+  width: 76px !important;
+  height: 76px !important;
+}
+
+/* Never show the old long form in the schedule UI. */
+.timeline-time { white-space: nowrap; }
+
+
+/* v29 — final data/map polish */
+.selected-booth-marker {
+  width: clamp(34px, 3.2vw, 44px) !important;
+  height: auto !important;
+  aspect-ratio: auto !important;
+  transform: translate(-50%, -100%) !important;
+  transform-origin: 50% 100% !important;
+}
+@media (max-width: 979px) {
+  .selected-booth-marker { width: 32px !important; }
+}
+@media (min-width: 980px) {
+  .nearby-booth-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    column-gap: 20px !important;
+    row-gap: 0 !important;
+  }
+  .nearby-booth-grid .booth-list-card {
+    min-width: 0 !important;
+    border-bottom: 1px solid rgba(255,255,255,.075) !important;
+  }
+  .nearby-booth-grid .booth-list-card:nth-child(3n + 2),
+  .nearby-booth-grid .booth-list-card:nth-child(3n + 3) {
+    border-left: 1px solid rgba(255,255,255,.075) !important;
+    padding-left: 20px !important;
+  }
+}
+@media (max-width: 979px) {
+  .nearby-booth-grid { display: flex !important; flex-direction: column !important; gap: 0 !important; }
+}
+.detail-hero-art > div strong {
+  font-size: clamp(18px, 1.45vw, 23px) !important;
+  line-height: 1.25 !important;
+  letter-spacing: -.025em !important;
+}
+@media (max-width: 979px) {
+  .detail-hero-art > div strong { font-size: clamp(19px, 5.3vw, 23px) !important; }
+}
+.detail-hero-art { padding: 13px 15px !important; gap: 13px !important; }
+.detail-hero-mascot { width: 76px !important; height: 76px !important; }
+
+
+/* v30 — information consistency + compact mobile artist lineup */
+.desktop-schedule-mc-card { margin-bottom: 13px; }
+.sidebar-header-brand p { max-width: 170px; line-height: 1.45; }
+
+@media (max-width: 979px) {
+  .artist-chips {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+  }
+  .artist-chip {
+    min-width: 0 !important;
+    padding: 7px 6px !important;
+    min-height: 42px;
+    gap: 3px;
+  }
+  .artist-chip span {
+    font-size: 10px !important;
+    line-height: 1.2;
+    word-break: keep-all;
+  }
+  .artist-chip small {
+    font-size: 7px !important;
+    line-height: 1.25;
+  }
+}
+@media (max-width: 380px) {
+  .artist-chips { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  .artist-chip { padding: 6px 4px !important; }
+  .artist-chip span { font-size: 9px !important; }
+  .artist-chip small { font-size: 6.5px !important; }
+}
+
+
+/* 축제 안내 제목 옆의 작은 버그 제보 링크 */
+.info-view-heading .info-heading-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+.info-view-heading .bug-report-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  margin-bottom: 3px;
+  padding: 4px 7px;
+  border: 1px solid rgba(212,175,55,.18);
+  border-radius: 999px;
+  color: #8fa2c3;
+  background: rgba(255,255,255,.025);
+  font-size: 9px;
+  text-decoration: none;
+  opacity: .8;
+  transition: opacity .2s, color .2s, border-color .2s;
+}
+.info-view-heading .bug-report-link:hover {
+  color: #e4ca78;
+  border-color: rgba(212,175,55,.38);
+  opacity: 1;
+}
+@media (max-width: 380px) {
+  .info-view-heading .bug-report-link { padding: 3px 6px; font-size: 8px; }
+}
+
+
+/* Final selected-booth marker polish: small, centered directly above the selected booth. */
+.selected-booth-marker-layer {
+  z-index: 900 !important;
+  pointer-events: none !important;
+}
+.selected-booth-marker {
+  width: 21px !important;
+  height: auto !important;
+  max-width: 21px !important;
+  transform: translate(-50%, calc(-100% - 3px)) !important;
+  transform-origin: 50% 100% !important;
+  z-index: 901 !important;
+}
+@media (max-width: 979px) {
+  .selected-booth-marker {
+    width: 19px !important;
+    max-width: 19px !important;
+    transform: translate(-50%, calc(-100% - 3px)) !important;
+  }
+}
+@media (max-width: 380px) {
+  .selected-booth-marker {
+    width: 17px !important;
+    max-width: 17px !important;
+  }
+}
+
+/* A booth without detailed content is still a valid selectable booth. Keep the
+   fallback notice visually intentional rather than making it look like an error. */
+.booth-info-pending {
+  margin: 14px 0 4px !important;
+  padding: 10px 12px !important;
+  border: 1px solid rgba(212,175,55,.14) !important;
+  border-radius: 10px !important;
+  background: rgba(255,255,255,.035) !important;
+  color: #93a3c1 !important;
+  font-size: 11px !important;
+  line-height: 1.55 !important;
+}
+
+/* 공연/행사 상세 보기 */
+.timeline-item-clickable {
+  cursor: pointer;
+  transition: background .18s ease, transform .18s ease;
+  border-radius: 10px;
+}
+.timeline-item-clickable:hover {
+  background: rgba(255,255,255,.035);
+}
+.timeline-item-clickable:focus-visible {
+  outline: 1px solid rgba(248,223,151,.55);
+  outline-offset: -1px;
+  background: rgba(255,255,255,.035);
+}
+
+.schedule-detail-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(2,8,24,.72);
+  backdrop-filter: blur(7px);
+}
+.schedule-detail-modal {
+  position: relative;
+  width: min(92vw, 460px);
+  max-height: min(78dvh, 620px);
+  overflow-y: auto;
+  padding: 28px 26px 24px;
+  border: 1px solid rgba(212,175,55,.28);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 90% 8%, rgba(77,100,151,.16), transparent 30%),
+    linear-gradient(145deg, rgba(15,34,75,.98), rgba(7,19,48,.98));
+  color: #f5efdf;
+  box-shadow: 0 28px 80px rgba(0,0,0,.48);
+  animation: modalScaleIn .2s cubic-bezier(.2,.8,.2,1) both;
+}
+.schedule-detail-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 8px;
+  color: #b9c7e0;
+  background: rgba(255,255,255,.045);
+}
+.schedule-detail-kicker {
+  margin-bottom: 7px;
+  color: #e2bd5b;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .14em;
+}
+.schedule-detail-modal h2 {
+  margin: 0 38px 18px 0;
+  font-family: var(--font-serif);
+  font-size: 24px;
+  line-height: 1.25;
+  color: #f7e7b0;
+}
+.schedule-detail-meta {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+  background: rgba(255,255,255,.035);
+}
+.schedule-detail-meta div {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: #c6d2e8;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.schedule-detail-meta svg { flex: 0 0 auto; color: #e2bd5b; margin-top: 2px; }
+.schedule-detail-section {
+  margin-top: 14px;
+  padding: 15px;
+  border: 1px solid rgba(212,175,55,.18);
+  border-radius: 12px;
+  background: rgba(8,22,52,.56);
+}
+.schedule-detail-section span {
+  display: block;
+  margin-bottom: 7px;
+  color: #e2bd5b;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .14em;
+}
+.schedule-detail-section p {
+  margin: 0;
+  color: #e4e9f3;
+  font-size: 13px;
+  line-height: 1.75;
+  white-space: pre-line;
+}
+.schedule-detail-note {
+  margin-top: 12px;
+  color: #8798b8;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+@media (max-width: 979px) {
+  .schedule-detail-backdrop { padding: 14px; }
+  .schedule-detail-modal {
+    width: min(100%, 420px);
+    max-height: calc(100dvh - 80px);
+    padding: 24px 20px 20px;
+    border-radius: 20px;
+  }
+  .schedule-detail-modal h2 { font-size: 21px; margin-bottom: 15px; }
+  .schedule-detail-meta { padding: 12px; }
+  .schedule-detail-section { padding: 13px; }
+  .schedule-detail-section p { font-size: 12px; line-height: 1.7; }
+}
+
+/* 공연 / 버스킹 전환: 메인 공연을 기본으로, 버스킹은 작게 전환 */
+.schedule-mode-switch {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 10px 0 12px;
+}
+.schedule-mode-switch button {
+  border: 1px solid rgba(212,175,55,.18);
+  background: rgba(255,255,255,.035);
+  color: #8193b5;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  cursor: pointer;
+}
+.schedule-mode-switch button.active {
+  color: #f4dfa1;
+  border-color: rgba(212,175,55,.45);
+  background: rgba(212,175,55,.10);
+}
+.schedule-mode-switch button:last-child { font-size: 8px; padding-inline: 9px; }
+.schedule-mode-caption {
+  margin: 10px 0 5px;
+  color: #d9bd68;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+.schedule-performer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 8px;
+}
+.schedule-performer-list span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #e7edf7;
+  font-size: 11px;
+  line-height: 1.45;
+}
+.schedule-performer-list b {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+  border-radius: 50%;
+  background: rgba(212,175,55,.10);
+  color: #e1c46d;
+  font-size: 8px;
+}
+.busking-performer-list {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+}
+.busking-performer-list span { font-size: 10px; }
+.desktop-schedule-mode-switch { margin-top: 12px; }
+.schedule-detail-program-list { display: flex; flex-direction: column; gap: 7px; }
+.schedule-detail-program-list > div { display: flex; align-items: center; gap: 9px; }
+.schedule-detail-program-list b {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; flex: 0 0 20px; border-radius: 50%;
+  background: rgba(212,175,55,.10); color: #e1c46d; font-size: 9px;
+}
+.schedule-detail-program-list span { color: #d7e0ef; }
+.mobile-break-fix { white-space: nowrap; }
+@media (max-width: 979px) {
+  .schedule-mode-switch { margin-top: 8px; }
+  .schedule-mode-switch button { padding: 5px 9px; }
+  .schedule-performer-list span { font-size: 10px; }
+}
