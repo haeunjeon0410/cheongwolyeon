@@ -154,9 +154,9 @@ export default function VectorCampusMapView({ campus, day, setDay, visibleItems,
               <img
                 className="selected-booth-marker"
                 style={{
-                  // mapPosition은 부스 영역의 중심점이므로, 마커도 그 중심을 기준으로
-                  // 부스 상단 중앙에 붙인다. (기존에는 width/2를 더해 우측 꼭짓점으로 밀렸음)
-                  left: `calc(${pos.x}% + ${width / 2}%)`,
+                  // mapPosition 자체가 부스의 중심점이다. 따라서 X는 그대로 사용하고,
+                  // Y만 부스 상단으로 올려 마커의 끝점이 정확히 부스 중앙 위에 닿게 한다.
+                  left: `${pos.x}%`,
                   top: `calc(${pos.y}% - ${height / 2}%)`,
                   transform: 'translate(-50%, -100%)',
                 }}

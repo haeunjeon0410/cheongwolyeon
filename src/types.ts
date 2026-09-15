@@ -8,5 +8,5 @@ export type Notice = { id: string; scope: 'global' | 'location'; title: string; 
 export type FoodTruck = { id: string; name: string; menu: string[] }
 export type Ride = { id: string; name: string; location: string; hours: string; capacity: string }
 export type PhotoBooth = { id: string; campus: Campus; location: string; hours: string; count: number }
-export type Sponsor = { id: string; name: string; description: string }
+export type Sponsor = { id: string; name: string; description: string; link?: string; linkLabel?: string }
 export type OfficialLinks = { instagram: string; email: string; alumniInstagram?: string; barrierFreeEmail?: string; youtube?: string }

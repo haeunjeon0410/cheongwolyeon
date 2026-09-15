@@ -9,6 +9,13 @@ export const officialLinks: OfficialLinks = {
   youtube: 'https://youtu.be/SJRA3g9f3VU',
 }
 
+// 더보기 > 푸드/즐길거리 카테고리 안내 링크
+export const guideLinks = {
+  foodTrucks: 'https://www.instagram.com/p/DdNpyZ3EsxP/',
+  rides: 'https://www.instagram.com/p/DdNpyZ3EsxP/',
+  photoBooths: 'https://www.instagram.com/p/DdOOwKQks4N/',
+}
+
 // 무대 MC
 export const stageMC = { name: '윤수빈', description: '식품영양학과 동문, OBS 기상캐스터·LCK 아나운서 출신' }
 
@@ -58,9 +65,9 @@ export const notices: Notice[] = [
 
 // 함께하는 곳
 export const sponsors: Sponsor[] = [
-  { id: 'partner-gangnam-eye', name: '강남브랜드안과', description: '제1캠퍼스 순헌사거리 서측 프로모션 부스 · 9/16(수) 13:00~16:00' },
-  { id: 'partner-one-person-support', name: '찾아가는 1인가구 지원사업', description: '서울시 1인가구 지원사업 홍보 부스 · 9/16(수) 13:00~16:00 · 순헌사거리 서측' },
-  { id: 'partner-steambase', name: '스팀베이스', description: '퍼펙트 샴푸 브러쉬 협찬 · 버스킹 공연 및 눈송산책 연계 배부' },
+  { id: 'partner-gangnam-eye', name: '강남브랜드안과', description: '제1캠퍼스 순헌사거리 서측 프로모션 부스 · 9/16(수) 13:00~16:00', link: 'https://www.instagram.com/p/DdSew2CkgY4/', linkLabel: 'Instagram' },
+  { id: 'partner-one-person-support', name: '찾아가는 1인가구 지원사업', description: '서울시 1인가구 지원사업 홍보 부스 · 9/16(수) 13:00~16:00 · 순헌사거리 서측', link: 'https://www.instagram.com/p/DdSew2CkgY4/', linkLabel: 'Instagram' },
+  { id: 'partner-steambase', name: '스팀베이스', description: '퍼펙트 샴푸 브러쉬 협찬 · 버스킹 공연 및 눈송산책 연계 배부', link: 'https://www.instagram.com/p/DdSe3z-kiKs/', linkLabel: 'Instagram' },
 ]
 
 // 푸드트럭 (순헌사거리 양측, 9/16~17 11:00~22:00, 총 8대)
@@ -95,6 +102,8 @@ export const hanbokRental = {
   deposit: '보증금 10,000원',
   fee: '총학생회비 납부자 1,000원 / 미납부자 5,000원',
   duration: '환복 시간 제외 30분 (총동문회 인스타 @sm_alumn 팔로우 인증 시 15분 연장)',
+  link: 'https://www.instagram.com/p/DdP9ai-kqqB/',
+  linkLabel: 'Instagram',
 }
 
 // 눈송 발자국 스탬프 프로그램 (메인 부스: 소월당, 1캠퍼스 순헌사거리)

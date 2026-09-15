@@ -2244,6 +2244,12 @@ body::before {
 .info-card-title { display: flex; align-items: baseline; gap: 9px; margin-bottom: 12px; }
 .info-card-title span { color: #d8b85c; font-size: 9px; letter-spacing: .18em; font-weight: 800; }
 .info-card-title strong { color: #f5ebd2; font-family: var(--font-serif); font-size: 18px; }
+.info-link-title { justify-content: space-between; align-items: center; }
+.info-link-title > div:first-child { display: flex; align-items: baseline; gap: 9px; }
+.info-icon-links { display: flex; gap: 5px; }
+.info-icon-link { width: 28px; height: 28px; border: 1px solid rgba(216,184,92,.22); border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; color: #d8b85c; background: rgba(216,184,92,.05); transition: background .18s ease, border-color .18s ease, transform .18s ease; }
+.info-icon-link:hover { background: rgba(216,184,92,.12); border-color: rgba(216,184,92,.42); transform: translateY(-1px); }
+
 .info-list { display: flex; flex-direction: column; gap: 6px; }
 .info-disclosure {
   border-top: 1px solid rgba(255,255,255,.07);
@@ -2280,8 +2286,12 @@ body::before {
 .info-program-card small { color: #8395b8; font-size: 9px; line-height: 1.5; }
 .sponsor-list { display: flex; flex-direction: column; gap: 9px; }
 .sponsor-list > div { padding-bottom: 9px; border-bottom: 1px solid rgba(255,255,255,.06); }
+.sponsor-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.sponsor-copy { min-width: 0; flex: 1; }
 .sponsor-list b { color: #e9d08b; font-size: 11px; }
 .sponsor-list p { margin: 3px 0 0; color: #9eafcf; font-size: 10px; line-height: 1.6; }
+.sponsor-link { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 4px; padding: 4px 7px; border: 1px solid rgba(233,208,139,.28); border-radius: 999px; color: #e9d08b; font-size: 9px; line-height: 1; text-decoration: none; white-space: nowrap; transition: background .2s ease, border-color .2s ease, transform .2s ease; }
+.sponsor-link:hover { background: rgba(233,208,139,.09); border-color: rgba(233,208,139,.48); transform: translateY(-1px); }
 .mc-note, .hanbok-note { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-top: 12px; color: #a7b6d0; font-size: 10px; }
 .mc-note b, .hanbok-note b { color: #f2dfaa; }
 .mc-note span, .hanbok-note span { flex-basis: 100%; padding-left: 23px; color: #8193b5; line-height: 1.5; }
@@ -3369,8 +3379,10 @@ button { -webkit-tap-highlight-color: transparent; }
   }
   .booth-hotspot span { display: none !important; }
   .booth-hotspot.selected {
-    background: rgba(244,208,111,.08) !important;
-    box-shadow: inset 0 0 0 1.5px rgba(244,210,122,.7) !important;
+    background: rgba(244,208,111,.24) !important;
+    border: 1px solid #f4d27a !important;
+    border-radius: 4px !important;
+    box-shadow: 0 0 0 2px rgba(232,197,108,.24), 0 4px 12px rgba(8,22,55,.38) !important;
   }
   .html-hotspot-map .map-pan-viewport {
     touch-action: none !important;
@@ -4111,38 +4123,6 @@ button { -webkit-tap-highlight-color: transparent; }
 }
 
 
-/* 축제 안내 제목 옆의 작은 버그 제보 링크 */
-.info-view-heading .info-heading-row {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
-}
-.info-view-heading .bug-report-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  flex: 0 0 auto;
-  margin-bottom: 3px;
-  padding: 4px 7px;
-  border: 1px solid rgba(212,175,55,.18);
-  border-radius: 999px;
-  color: #8fa2c3;
-  background: rgba(255,255,255,.025);
-  font-size: 9px;
-  text-decoration: none;
-  opacity: .8;
-  transition: opacity .2s, color .2s, border-color .2s;
-}
-.info-view-heading .bug-report-link:hover {
-  color: #e4ca78;
-  border-color: rgba(212,175,55,.38);
-  opacity: 1;
-}
-@media (max-width: 380px) {
-  .info-view-heading .bug-report-link { padding: 3px 6px; font-size: 8px; }
-}
-
 
 /* Final selected-booth marker polish: small, centered directly above the selected booth. */
 .selected-booth-marker-layer {
@@ -4153,21 +4133,21 @@ button { -webkit-tap-highlight-color: transparent; }
   width: 21px !important;
   height: auto !important;
   max-width: 21px !important;
-  transform: translate(-50%, calc(-100% - 3px)) !important;
+  transform: translate(-50%, -100%) !important;
   transform-origin: 50% 100% !important;
   z-index: 901 !important;
 }
 @media (max-width: 979px) {
   .selected-booth-marker {
-    width: 19px !important;
-    max-width: 19px !important;
-    transform: translate(-50%, calc(-100% - 3px)) !important;
+    width: 15px !important;
+    max-width: 15px !important;
+    transform: translate(-50%, -100%) !important;
   }
 }
 @media (max-width: 380px) {
   .selected-booth-marker {
-    width: 17px !important;
-    max-width: 17px !important;
+    width: 14px !important;
+    max-width: 14px !important;
   }
 }
 
@@ -4390,4 +4370,176 @@ button { -webkit-tap-highlight-color: transparent; }
   .schedule-mode-switch { margin-top: 8px; }
   .schedule-mode-switch button { padding: 5px 9px; }
   .schedule-performer-list span { font-size: 10px; }
+}
+
+/* Hanbok rental note: align its location/time line with the other detail content. */
+.hanbok-note span {
+  padding-left: 0 !important;
+}
+
+/* Festival guide: concept is the first card; keep the welcome mascot in the former hero position. */
+.concept-card { position: relative; overflow: hidden; }
+.concept-mascot {
+  position: absolute;
+  width: 145px;
+  height: 145px;
+  right: 5px;
+  bottom: -4px;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 18px rgba(0,0,0,.28));
+  pointer-events: none;
+}
+.concept-card .concept-copy,
+.concept-card .concept-campus-grid { position: relative; z-index: 1; }
+@media (min-width: 980px) {
+  .concept-card { padding-right: 160px; }
+}
+@media (max-width: 979px) {
+  .concept-mascot { width: 120px; height: 120px; right: -2px; }
+  .concept-card { padding-right: 135px; }
+}
+
+/* 상세 부스 카드에서는 위치 텍스트/길찾기 UI를 표시하지 않는다. */
+.hanji-card-sheet .location-subtext,
+.hanji-card-panel .location-subtext,
+.hanji-card-sheet .directions-nav-btn,
+.hanji-card-panel .directions-nav-btn { display: none !important; }
+.hanbok-note { justify-content: space-between; align-items: center; }
+.hanbok-note-copy { min-width: 0; flex: 1; }
+.hanbok-note-copy span { display: block; padding-left: 0; margin-top: 3px; }
+.hanbok-link { flex-shrink: 0; }
+
+/* Intro assets are preloaded, then the complete scene appears together. */
+.festival-intro {
+  opacity: 0;
+  animation: none;
+}
+.festival-intro.is-ready {
+  animation: introSceneIn .35s ease both;
+}
+@keyframes introSceneIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+/* Prevent individual elements/assets from creating a staggered entrance. */
+.festival-intro img,
+.festival-intro .intro-content,
+.festival-intro .intro-stars {
+  animation-delay: 0s;
+}
+
+
+/* v42 — mobile selected marker: keep it small and anchor the tip to the booth center */
+@media (max-width: 979px) {
+  .selected-booth-marker {
+    width: 10px !important;
+    max-width: 10px !important;
+    height: auto !important;
+    transform: translate(-50%, -100%) !important;
+    transform-origin: 50% 100% !important;
+  }
+}
+@media (max-width: 380px) {
+  .selected-booth-marker {
+    width: 9px !important;
+    max-width: 9px !important;
+  }
+}
+
+
+/* More page polish — center artist names and give the concept mascot its own top area on mobile. */
+@media (max-width: 979px) {
+  .artist-chip {
+    align-items: center !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+  .artist-chip span,
+  .artist-chip small {
+    width: 100%;
+    text-align: center !important;
+  }
+
+  .concept-card {
+    padding-right: 14px !important;
+    padding-top: 108px !important;
+  }
+  .concept-mascot {
+    width: 88px !important;
+    height: 88px !important;
+    top: 8px !important;
+    right: 50% !important;
+    bottom: auto !important;
+    transform: translateX(50%) !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .concept-card {
+    padding-right: 12px !important;
+    padding-top: 98px !important;
+  }
+  .concept-mascot {
+    width: 78px !important;
+    height: 78px !important;
+    top: 7px !important;
+  }
+}
+
+/* v43 — More concept mascot: use the right-side breathing room instead of taking a top row. */
+.concept-card { overflow: hidden !important; }
+.concept-mascot {
+  width: 158px !important;
+  height: 158px !important;
+  right: 10px !important;
+  top: 34px !important;
+  bottom: auto !important;
+  object-fit: contain !important;
+  filter: drop-shadow(0 14px 20px rgba(0,0,0,.30)) !important;
+  z-index: 2 !important;
+}
+.concept-card .info-card-title,
+.concept-card .concept-copy,
+.concept-card .concept-campus-grid { position: relative; z-index: 3; }
+@media (min-width: 980px) {
+  .concept-card { padding-right: 176px !important; }
+  .concept-mascot { width: 172px !important; height: 172px !important; right: 12px !important; top: 28px !important; }
+}
+@media (max-width: 979px) {
+  .concept-card {
+    padding-right: 14px !important;
+    padding-top: 20px !important;
+  }
+  .concept-mascot {
+    width: 126px !important;
+    height: 126px !important;
+    right: 8px !important;
+    top: 28px !important;
+    transform: none !important;
+  }
+  /* Keep the title clear of the mascot while letting the paragraphs use the full card width. */
+  .concept-card .info-card-title { padding-right: 108px !important; }
+  .concept-card .concept-copy { padding-right: 0 !important; }
+}
+@media (max-width: 380px) {
+  .concept-mascot { width: 112px !important; height: 112px !important; right: 5px !important; top: 27px !important; }
+  .concept-card .info-card-title { padding-right: 96px !important; }
+}
+
+/* v43 — Selected booth should read as a warm gold focus ring on mobile, matching desktop. */
+@media (max-width: 979px) {
+  .booth-hotspot.selected {
+    background: rgba(244,208,111,.18) !important;
+    border: 1px solid rgba(248,223,151,.96) !important;
+    border-radius: 4px !important;
+    box-shadow:
+      0 0 0 2px rgba(244,210,122,.58),
+      0 0 10px 2px rgba(244,210,122,.34),
+      0 4px 12px rgba(8,22,55,.34) !important;
+  }
+  .booth-hotspot.selected span {
+    color: #fff5d6 !important;
+    background: rgba(7,18,47,.72) !important;
+    text-shadow: 0 0 8px rgba(248,223,151,.42) !important;
+  }
 }
