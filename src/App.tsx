@@ -325,12 +325,8 @@ export default function App() {
 
 
 
-  const { position, status, requestLocation, setPosition } = useGeolocation()
+  const { position, status, errorMessage, requestLocation, setPosition } = useGeolocation()
   const coords = position?.coords
-
-  useEffect(() => {
-    if (tab === 'nearby' && status === 'idle') requestLocation()
-  }, [tab, status, requestLocation])
 
   useEffect(() => {
     if (selectedBooth) {
@@ -558,7 +554,7 @@ export default function App() {
               <p>내 주변</p>
               <h2>내 주변 부스</h2>
               <small>
-                {status === 'loading' ? '위치를 확인하는 중입니다...' : !coords ? '위치를 허용하면 가까운 부스를 찾을 수 있습니다' : ''}
+                {status === 'loading' ? '위치를 확인하는 중입니다...' : errorMessage || (!coords ? '위치를 허용하면 가까운 부스를 찾을 수 있습니다' : '')}
               </small>
             </div>
 
@@ -580,7 +576,7 @@ export default function App() {
               </div>
               <button className="location-permission-btn" onClick={requestLocation} disabled={status === 'loading'} title="위치 권한 사용">
                 <LocateFixed size={13} />
-                <span>{status === 'loading' ? '확인 중' : coords ? '위치 새로고침' : '위치 권한'}</span>
+                <span>{status === 'loading' ? '확인 중' : coords ? '위치 새로고침' : status === 'denied' ? '권한 설정 확인' : '위치 권한'}</span>
               </button>
             </div>
 
@@ -923,7 +919,7 @@ export default function App() {
                 <p>내 주변</p>
                 <h2>내 주변 부스</h2>
                 <small>
-                  {status === 'loading' ? '위치를 확인하는 중입니다...' : !coords ? '위치를 허용하면 가까운 부스를 찾을 수 있습니다' : ''}
+                  {status === 'loading' ? '위치를 확인하는 중입니다...' : errorMessage || (!coords ? '위치를 허용하면 가까운 부스를 찾을 수 있습니다' : '')}
                 </small>
               </div>
               <div className="nearby-toolbar">
@@ -944,7 +940,7 @@ export default function App() {
                 </div>
                 <button className="location-permission-btn" onClick={requestLocation} disabled={status === 'loading'}>
                   <LocateFixed size={13} />
-                  <span>{status === 'loading' ? '확인 중' : coords ? '위치 새로고침' : '위치 권한'}</span>
+                  <span>{status === 'loading' ? '확인 중' : coords ? '위치 새로고침' : status === 'denied' ? '권한 설정 확인' : '위치 권한'}</span>
                 </button>
               </div>
               <div className="nearby-booth-grid" style={{ marginTop: '12px' }}>

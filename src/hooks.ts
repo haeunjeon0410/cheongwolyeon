@@ -45,14 +45,17 @@ export function useGeolocation(): {
         setStatus('success')
       },
       (error) => {
-        setStatus('error')
         if (error.code === error.PERMISSION_DENIED) {
-          setErrorMessage('브라우저에서 위치 정보 접근 권한이 거부되었습니다.')
+          setStatus('denied')
+          setErrorMessage('위치 권한이 차단되어 있습니다. 브라우저의 사이트 설정에서 위치 권한을 허용한 뒤 다시 눌러주세요.')
         } else if (error.code === error.POSITION_UNAVAILABLE) {
+          setStatus('error')
           setErrorMessage('현재 위치를 가져올 수 없습니다. GPS 연결을 확인해 주세요.')
         } else if (error.code === error.TIMEOUT) {
+          setStatus('error')
           setErrorMessage('위치 확인 요청 시간이 초과되었습니다.')
         } else {
+          setStatus('error')
           setErrorMessage('위치 확인 중 오류가 발생했습니다.')
         }
       },
