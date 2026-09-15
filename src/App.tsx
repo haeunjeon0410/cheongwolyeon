@@ -40,10 +40,9 @@ function displayCategory(category?: string) {
 }
 
 const assets = {
-  welcome: '/assets/mascot/nunsongi-welcome-20260915-040013.png',
-  mapMascot: '/assets/mascot/nunsongi-map-20260915-040604.png',
-  emptyMascot: '/assets/mascot/nunsongi-empty-20260915-040613.png',
-  lanternMarker: '/assets/markers/lantern-marker-20260915-040004.png',
+  welcome: '/assets/mascot/nunsongi-welcome-20260915-040013.webp',
+  mapMascot: '/assets/mascot/nunsongi-map-20260915-040604.webp',
+  emptyMascot: '/assets/mascot/nunsongi-empty-20260915-040613.webp',
 }
 
 // Android에서 Instagram 게시물 링크가 instagram://media/...로 딥링크되며
@@ -152,13 +151,13 @@ function FestivalIntro({ onEnter }: { onEnter: () => void }) {
 
   useEffect(() => {
     const introImages = [
-      '/assets/decoration/stars-20260915-040004.png',
-      '/assets/decoration/cloud-long-20260915-040004.png',
-      '/assets/decoration/cloud-small-20260915-040021.png',
-      '/assets/decoration/full-moon-20260915-040004.png',
-      '/assets/decoration/moonlight-halo-20260915-040023.png',
-      '/assets/decoration/lantern-hanging-20260915-040004.png',
-      '/assets/decoration/lantern-hand-20260915-040026.png',
+      '/assets/decoration/stars-20260915-040004.webp',
+      '/assets/decoration/cloud-long-20260915-040004.webp',
+      '/assets/decoration/cloud-small-20260915-040021.webp',
+      '/assets/decoration/full-moon-20260915-040004.webp',
+      '/assets/decoration/moonlight-halo-20260915-040023.webp',
+      '/assets/decoration/lantern-hanging-20260915-040004.webp',
+      '/assets/decoration/lantern-hand-20260915-040026.webp',
       assets.emptyMascot,
     ]
 
@@ -186,12 +185,12 @@ function FestivalIntro({ onEnter }: { onEnter: () => void }) {
   return (
     <div className={`festival-intro ${ready ? 'is-ready' : ''}`} role="dialog" aria-modal="true" aria-label="청월연 축제 안내">
       <div className="intro-stars" aria-hidden="true" />
-      <img className="intro-cloud intro-cloud-one" src="/assets/decoration/cloud-long-20260915-040004.png" alt="" />
-      <img className="intro-cloud intro-cloud-two" src="/assets/decoration/cloud-small-20260915-040021.png" alt="" />
-      <img className="intro-moon" src="/assets/decoration/full-moon-20260915-040004.png" alt="" />
-      <img className="intro-halo" src="/assets/decoration/moonlight-halo-20260915-040023.png" alt="" />
-      <img className="intro-lantern intro-lantern-left" src="/assets/decoration/lantern-hanging-20260915-040004.png" alt="" />
-      <img className="intro-lantern intro-lantern-right" src="/assets/decoration/lantern-hand-20260915-040026.png" alt="" />
+      <img className="intro-cloud intro-cloud-one" src="/assets/decoration/cloud-long-20260915-040004.webp" alt="" />
+      <img className="intro-cloud intro-cloud-two" src="/assets/decoration/cloud-small-20260915-040021.webp" alt="" />
+      <img className="intro-moon" src="/assets/decoration/full-moon-20260915-040004.webp" alt="" />
+      <img className="intro-halo" src="/assets/decoration/moonlight-halo-20260915-040023.webp" alt="" />
+      <img className="intro-lantern intro-lantern-left" src="/assets/decoration/lantern-hanging-20260915-040004.webp" alt="" />
+      <img className="intro-lantern intro-lantern-right" src="/assets/decoration/lantern-hand-20260915-040026.webp" alt="" />
       <div className="intro-content">
         <div className="intro-kicker">2026 CHEONGPA FESTIVAL</div>
         <h1 className="font-serif">青月宴</h1>
@@ -261,7 +260,7 @@ function FestivalInfo({ compact = false }: { compact?: boolean }) {
       </section>
 
       <section className="info-card info-program-card">
-        <img src="/assets/mascot/nunsongi-empty-20260915-040613.png" alt="" />
+        <img src="/assets/mascot/nunsongi-empty-20260915-040613.webp" alt="" />
         <div>
           <div className="info-card-title"><span>STAMP</span><strong>{stampProgram.name}</strong></div>
           <p>{stampProgram.mainBooth} · {stampProgram.hours}</p>
@@ -451,10 +450,10 @@ export default function App() {
   return (
     <>
       <div className="festival-atmosphere" aria-hidden="true">
-        <img className="atmosphere-stars" src="/assets/decoration/stars-20260915-040004.png" alt="" />
-        <img className="atmosphere-moon" src="/assets/decoration/crescent-moon-20260915-040004.png" alt="" />
-        <img className="atmosphere-cloud cloud-one" src="/assets/decoration/cloud-long-20260915-040004.png" alt="" />
-        <img className="atmosphere-cloud cloud-two" src="/assets/decoration/cloud-small-20260915-040021.png" alt="" />
+        <img className="atmosphere-stars" src="/assets/decoration/stars-20260915-040004.webp" alt="" />
+        <img className="atmosphere-moon" src="/assets/decoration/crescent-moon-20260915-040004.webp" alt="" />
+        <img className="atmosphere-cloud cloud-one" src="/assets/decoration/cloud-long-20260915-040004.webp" alt="" />
+        <img className="atmosphere-cloud cloud-two" src="/assets/decoration/cloud-small-20260915-040021.webp" alt="" />
       </div>
       {showIntro && <FestivalIntro onEnter={dismissIntro} />}
       {/* 📱 Mobile Layout */}
@@ -733,7 +732,7 @@ export default function App() {
               </div>
 
               <div className="detail-hero-art">
-                <img src="/assets/decoration/crescent-moon-20260915-040004.png" alt="" />
+                <img src="/assets/decoration/crescent-moon-20260915-040004.webp" alt="" />
                 <img className="detail-hero-mascot" src={assets.mapMascot} alt="" />
                 <div>
                   <span>{selectedLocation.code}</span>
@@ -1004,7 +1003,7 @@ export default function App() {
               </div>
 
               <div className="detail-hero-art">
-                <img src="/assets/decoration/crescent-moon-20260915-040004.png" alt="" />
+                <img src="/assets/decoration/crescent-moon-20260915-040004.webp" alt="" />
                 <img className="detail-hero-mascot" src={assets.mapMascot} alt="" />
                 <div>
                   <span>{selectedLocation.code}</span>

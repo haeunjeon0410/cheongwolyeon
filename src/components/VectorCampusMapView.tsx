@@ -5,7 +5,7 @@ import { gpsToMapPosition, isWithinCampus } from '../utils'
 
 type MapItem = { booth: Booth; location: { code: string; mapPosition: { x: number; y: number }; mapSize?: { width: number; height: number }; latitude: number; longitude: number } }
 type Props = { campus: Campus; day: Day; setDay: (day: Day) => void; visibleItems: MapItem[]; selectedBooth: Booth | null; lastViewedBooth: Booth | null; setSelectedBooth: (booth: Booth | null) => void; status: string; coords?: GeolocationCoordinates; requestLocation: () => void }
-const mapSources: Record<Campus, string> = { campus1: '/assets/maps/campus1.png', campus2: '/assets/maps/campus2.png' }
+const mapSources: Record<Campus, string> = { campus1: '/assets/maps/campus1.webp', campus2: '/assets/maps/campus2.webp' }
 
 type Point = { x: number; y: number }
 
@@ -160,7 +160,7 @@ export default function VectorCampusMapView({ campus, day, setDay, visibleItems,
                   top: `calc(${pos.y}% - ${height / 2}%)`,
                   transform: 'translate(-50%, -100%)',
                 }}
-                src="/assets/markers/lantern-marker-cropped.png"
+                src="/assets/markers/lantern-marker-cropped.webp"
                 alt=""
                 draggable={false}
               />

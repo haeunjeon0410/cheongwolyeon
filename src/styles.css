@@ -25,7 +25,7 @@ body {
   font-family: var(--font-sans);
   color: #f7f0de;
   background-color: var(--color-bg-deep);
-  background-image: url('/assets/backgrounds/mobile-night.png');
+  background-image: url('/assets/backgrounds/mobile-night.webp');
   background-size: cover;
   background-position: center top;
   background-attachment: fixed;
@@ -982,7 +982,7 @@ input {
 
 @media (min-width: 980px) {
   body {
-    background-image: url('/assets/backgrounds/desktop-night.png');
+    background-image: url('/assets/backgrounds/desktop-night.webp');
     background-size: cover;
     background-position: center top;
   }
@@ -1798,7 +1798,7 @@ input {
   border-radius: 16px;
   background:
     linear-gradient(120deg, rgba(23,44,92,.82), rgba(7,18,47,.9)),
-    url('/assets/decoration/stars-20260915-040004.png') center/cover;
+    url('/assets/decoration/stars-20260915-040004.webp') center/cover;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
 }
 .artist-lineup::after {
@@ -1808,7 +1808,7 @@ input {
   height: 130px;
   right: -34px;
   top: -58px;
-  background: url('/assets/decoration/crescent-moon-20260915-040004.png') center/contain no-repeat;
+  background: url('/assets/decoration/crescent-moon-20260915-040004.webp') center/contain no-repeat;
   opacity: .18;
   pointer-events: none;
 }
@@ -1875,7 +1875,7 @@ input {
   color: #f7f0de !important;
   background:
     linear-gradient(160deg, rgba(17,35,76,.98), rgba(6,17,43,.98)),
-    url('/assets/decoration/stars-20260915-040004.png') center/cover !important;
+    url('/assets/decoration/stars-20260915-040004.webp') center/cover !important;
   border: 1px solid rgba(212,175,55,.32);
 }
 .hanji-card-sheet::before,
@@ -1883,7 +1883,7 @@ input {
   content: '';
   position: absolute;
   inset: 0;
-  background: url('/assets/decoration/corner-ornament-20260915-040008.png') top right/100px auto no-repeat;
+  background: url('/assets/decoration/corner-ornament-20260915-040008.webp') top right/100px auto no-repeat;
   opacity: .2;
   pointer-events: none;
 }
@@ -2087,7 +2087,7 @@ body::before {
   position: absolute;
   inset: 0;
   opacity: .5;
-  background-image: url('/assets/decoration/stars-20260915-040004.png');
+  background-image: url('/assets/decoration/stars-20260915-040004.webp');
   background-size: 680px;
   background-position: center;
   animation: starDrift 18s linear infinite;
@@ -2143,7 +2143,7 @@ body::before {
   position: absolute;
   width: 68px;
   height: 68px;
-  background: url('/assets/decoration/corner-ornament-20260915-040008.png') center / contain no-repeat;
+  background: url('/assets/decoration/corner-ornament-20260915-040008.webp') center / contain no-repeat;
   opacity: .55;
 }
 .intro-card::before { top: 16px; left: 16px; }
@@ -2226,7 +2226,7 @@ body::before {
   height: 230px;
   right: -75px;
   top: -70px;
-  background: url('/assets/decoration/moonlight-halo-20260915-040023.png') center / contain no-repeat;
+  background: url('/assets/decoration/moonlight-halo-20260915-040023.webp') center / contain no-repeat;
   opacity: .2;
 }
 .info-hero-card h2 { margin: 8px 0; color: #f8df97; font-size: 27px; line-height: 1.45; }
@@ -2699,7 +2699,7 @@ html, body, #root { width: 100%; max-width: 100%; overflow-x: hidden; }
 /* Clean cinematic intro: same oriental night background, layered festival assets, fade only. */
 .festival-intro {
   background-color: #070e26 !important;
-  background-image: url('/assets/backgrounds/mobile-night.png') !important;
+  background-image: url('/assets/backgrounds/mobile-night.webp') !important;
   background-size: cover !important;
   background-position: center !important;
   animation: introAppear .7s ease both !important;
@@ -2793,7 +2793,7 @@ html, body, #root { width: 100%; max-width: 100%; overflow-x: hidden; }
 @keyframes introExit { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
 
 @media (min-width: 980px) {
-  .festival-intro { background-image: url('/assets/backgrounds/desktop-night.png') !important; }
+  .festival-intro { background-image: url('/assets/backgrounds/desktop-night.webp') !important; }
   .intro-mascot { width: 170px !important; height: 170px !important; }
 }
 @media (max-width: 380px) {
@@ -2837,7 +2837,7 @@ button { -webkit-tap-highlight-color: transparent; }
 
 /* ---------- Intro: empty mascot, no card, just a scene ---------- */
 .festival-intro {
-  background-image: url('/assets/backgrounds/mobile-night.png') !important;
+  background-image: url('/assets/backgrounds/mobile-night.webp') !important;
   background-size: cover !important;
   background-position: center !important;
   background-color: #070e26 !important;
