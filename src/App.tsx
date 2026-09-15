@@ -46,12 +46,25 @@ const assets = {
   lanternMarker: '/assets/markers/lantern-marker-20260915-040004.png',
 }
 
+// Android에서 Instagram 게시물 링크가 instagram://media/...로 딥링크되며
+// 현재 브라우저/웹뷰에서 ERR_UNKNOWN_URL_SCHEME이 나는 경우를 피합니다.
+// 모바일에서는 Instagram의 웹용 embed 페이지를 열어 게시물을 그대로 보여줍니다.
+function getExternalPromoUrl(url?: string) {
+  if (!url) return ''
+  const isInstagramPost = /^https?:\/\/(www\.)?instagram\.com\/p\//i.test(url)
+  const isAndroid = typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent)
+  if (isInstagramPost && isAndroid && !/\/embed(?:\/captioned)?\/?$/i.test(url)) {
+    return `${url.replace(/\/$/, '')}/embed/captioned/`
+  }
+  return url
+}
+
 function BoothPromoLinks({ booth }: { booth: Booth }) {
   // 인스타 홍보글이 있으면 인스타를 우선 사용하고,
   // 인스타가 없는 경우에만 에브리타임 링크를 사용합니다.
   const instagram = booth.promoLinks?.instagram
   const everytime = booth.promoLinks?.everytime
-  const promoUrl = instagram || everytime
+  const promoUrl = getExternalPromoUrl(instagram || everytime)
   if (!promoUrl) return null
 
   const isInstagram = Boolean(instagram)
@@ -223,7 +236,7 @@ function FestivalInfo({ compact = false }: { compact?: boolean }) {
         <div className="info-card info-link-card">
           <div className="info-card-title info-link-title">
             <div><span>FOOD</span><strong>푸드트럭</strong></div>
-            <a className="info-icon-link" href={guideLinks.foodTrucks} target="_blank" rel="noreferrer" aria-label="푸드트럭 인스타그램 열기">
+            <a className="info-icon-link" href={getExternalPromoUrl(guideLinks.foodTrucks)} target="_blank" rel="noreferrer" aria-label="푸드트럭 인스타그램 열기">
               <Utensils size={15} strokeWidth={1.8} />
             </a>
           </div>
@@ -234,10 +247,10 @@ function FestivalInfo({ compact = false }: { compact?: boolean }) {
           <div className="info-card-title info-link-title">
             <div><span>PLAY</span><strong>즐길거리</strong></div>
             <div className="info-icon-links">
-              <a className="info-icon-link" href={guideLinks.rides} target="_blank" rel="noreferrer" aria-label="놀이기구 인스타그램 열기">
+              <a className="info-icon-link" href={getExternalPromoUrl(guideLinks.rides)} target="_blank" rel="noreferrer" aria-label="놀이기구 인스타그램 열기">
                 <FerrisWheel size={15} strokeWidth={1.8} />
               </a>
-              <a className="info-icon-link" href={guideLinks.photoBooths} target="_blank" rel="noreferrer" aria-label="포토부스 인스타그램 열기">
+              <a className="info-icon-link" href={getExternalPromoUrl(guideLinks.photoBooths)} target="_blank" rel="noreferrer" aria-label="포토부스 인스타그램 열기">
                 <Camera size={15} strokeWidth={1.8} />
               </a>
             </div>
@@ -266,7 +279,7 @@ function FestivalInfo({ compact = false }: { compact?: boolean }) {
                 <p>{sponsor.description}</p>
               </div>
               {sponsor.link && (
-                <a className="sponsor-link" href={sponsor.link} target="_blank" rel="noreferrer" aria-label={`${sponsor.name} ${sponsor.linkLabel || '링크'} 열기`}>
+                <a className="sponsor-link" href={getExternalPromoUrl(sponsor.link)} target="_blank" rel="noreferrer" aria-label={`${sponsor.name} ${sponsor.linkLabel || '링크'} 열기`}>
                   <span>{sponsor.linkLabel || '보기'}</span>
                   <ExternalLink size={11} />
                 </a>
@@ -276,7 +289,7 @@ function FestivalInfo({ compact = false }: { compact?: boolean }) {
         </div>
         <div className="hanbok-note">
           <div className="hanbok-note-copy"><b>한복 대여</b><span>{hanbokRental.location} · {hanbokRental.hours}</span></div>
-          <a className="sponsor-link hanbok-link" href={hanbokRental.link} target="_blank" rel="noreferrer" aria-label={`한복 대여 ${hanbokRental.linkLabel || '링크'} 열기`}>
+          <a className="sponsor-link hanbok-link" href={getExternalPromoUrl(hanbokRental.link)} target="_blank" rel="noreferrer" aria-label={`한복 대여 ${hanbokRental.linkLabel || '링크'} 열기`}>
             <span>{hanbokRental.linkLabel || '보기'}</span>
             <ExternalLink size={11} />
           </a>
