@@ -312,10 +312,14 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [nearbyFilter, setNearbyFilter] = useState<'all' | 'food' | 'experience' | 'store'>('all')
-  // 페이지에 새로 진입하거나 새로고침할 때마다 인트로를 보여준다.
-  // 인트로 내부의 자동 전환이 끝나면 메인 화면으로 넘어간다.
-  const [showIntro, setShowIntro] = useState(true)
+  // 현재 브라우저 세션에서 처음 한 번만 인트로를 보여준다.
+  // 새로고침이나 뒤로가기/앞으로가기로 앱이 다시 마운트되어도 다시 뜨지 않는다.
+  const [showIntro, setShowIntro] = useState(() => {
+    if (typeof window === 'undefined') return true
+    return localStorage.getItem('cheongpa-intro-seen') !== '1'
+  })
   const dismissIntro = () => {
+    localStorage.setItem('cheongpa-intro-seen', '1')
     setShowIntro(false)
   }
 
