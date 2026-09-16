@@ -4357,13 +4357,17 @@ button { -webkit-tap-highlight-color: transparent; }
 }
 .busking-performer-list span { font-size: 10px; }
 .desktop-schedule-mode-switch { margin-top: 12px; }
-.schedule-detail-program-list { display: flex; flex-direction: column; gap: 7px; }
-.schedule-detail-program-list > div { display: flex; align-items: center; gap: 9px; }
+.schedule-detail-program-list { display: flex; flex-direction: column; gap: 10px; }
+.schedule-detail-program-list > div { display: block; }
+.schedule-detail-program-head { display: flex; align-items: center; gap: 8px; }
 .schedule-detail-program-list b {
   display: inline-flex; align-items: center; justify-content: center;
   width: 20px; height: 20px; flex: 0 0 20px; border-radius: 50%;
   background: rgba(212,175,55,.10); color: #e1c46d; font-size: 9px;
 }
+.schedule-detail-program-head strong { flex: 1; min-width: 0; color: #f2ead7; font-size: 12px; line-height: 1.4; }
+.schedule-detail-program-head time { flex: 0 0 auto; color: #79d5e6; font-size: 10px; font-weight: 800; }
+.schedule-detail-program-row > p { margin: 5px 0 0 28px; color: #c9d4e7; font-size: 11px; line-height: 1.65; white-space: pre-line; }
 .schedule-detail-program-list span { color: #d7e0ef; }
 .mobile-break-fix { white-space: nowrap; }
 @media (max-width: 979px) {

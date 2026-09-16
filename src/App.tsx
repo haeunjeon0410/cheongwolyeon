@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import {
   CalendarDays,
   ChevronRight,
@@ -646,7 +647,7 @@ export default function App() {
                       onClick={() => setSelectedSchedule(item)}
                       onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setSelectedSchedule(item) } }}
                       aria-label={`${item.title} 상세 보기`}>
-                      <div className="timeline-time">{item.time}</div>
+                      <div className="timeline-time">{item.time.split("~")[0]}~</div>
                       <div className="timeline-axis"><div className="timeline-node" /></div>
                       <div className="timeline-content">
                         <div className="timeline-header-row"><strong>{item.title}</strong>{isCurrentActive && <span className="timeline-active-badge">현재 진행 중</span>}</div>
@@ -904,7 +905,7 @@ export default function App() {
                   const isCurrentActive = isEventActive(item.date, item.time)
                   const performers = item.description?.split(' · ') ?? []
                   return <div key={`${item.date}-${item.time}-${item.title}`} className={`timeline-item timeline-item-clickable ${isCurrentActive ? 'active' : ''}`} role="button" tabIndex={0} onClick={() => setSelectedSchedule(item)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setSelectedSchedule(item) } }} aria-label={`${item.title} 상세 보기`}>
-                    <div className="timeline-time">{item.time}</div><div className="timeline-axis"><div className="timeline-node" /></div>
+                    <div className="timeline-time">{item.time.split("~")[0]}~</div><div className="timeline-axis"><div className="timeline-node" /></div>
                     <div className="timeline-content"><div className="timeline-header-row"><strong>{item.title}</strong>{isCurrentActive && <span className="timeline-active-badge">현재 진행 중</span>}</div><small><MapPin size={12} /> {item.place}</small><div className={`schedule-performer-list ${scheduleMode === 'busking' ? 'busking-performer-list' : ''}`}>{performers.map((name, index) => <span key={`${name}-${index}`}><b>{index + 1}</b>{name}</span>)}</div></div>
                   </div>
                 })}
@@ -1053,7 +1054,7 @@ export default function App() {
             </div>
           ) : null}        </section>
 
-        {selectedSchedule && (
+        {selectedSchedule && typeof document !== 'undefined' && createPortal(
           <div className="schedule-detail-backdrop" onClick={() => setSelectedSchedule(null)}>
             <div className="schedule-detail-modal" onClick={(event) => event.stopPropagation()}>
               <button
@@ -1068,16 +1069,34 @@ export default function App() {
               <h2>{selectedSchedule.title}</h2>
               <div className="schedule-detail-meta">
                 <div><CalendarDays size={14} /><span>{selectedSchedule.date === 'day1' ? '9월 16일(수)' : '9월 17일(목)'}</span></div>
-                <div><Music2 size={14} /><span>{selectedSchedule.time === '미정' ? '미정' : `${selectedSchedule.time} ~`}</span></div>
+                <div><Music2 size={14} /><span>{selectedSchedule.time}</span></div>
                 <div><MapPin size={14} /><span>{selectedSchedule.place}</span></div>
               </div>
               <div className="schedule-detail-section">
                 <span>PROGRAM</span>
-                <div className="schedule-detail-program-list">{(selectedSchedule.description || '공연 정보는 추후 업데이트됩니다.').split(' · ').map((name, index) => <div key={`${name}-${index}`}><b>{index + 1}</b><span>{name}</span></div>)}</div>
+                {selectedSchedule.programs?.length ? (
+                  <div className="schedule-detail-program-list">
+                    {selectedSchedule.programs.map((program, index) => (
+                      <div className="schedule-detail-program-row" key={`${program.performer}-${index}`}>
+                        <div className="schedule-detail-program-head">
+                          <b>{index + 1}</b>
+                          <strong>{program.performer}</strong>
+                          <time>{program.time}</time>
+                        </div>
+                        {program.content && <p>{program.content}</p>}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="schedule-detail-program-list">
+                    {(selectedSchedule.description || '공연 정보가 준비 중입니다.').split(' · ').map((name, index) => <div key={`${name}-${index}`}><b>{index + 1}</b><span>{name}</span></div>)}
+                  </div>
+                )}
               </div>
               <div className="schedule-detail-note">공연 시간 및 진행 내용은 현장 상황에 따라 변동될 수 있습니다.</div>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </div>
     </>
