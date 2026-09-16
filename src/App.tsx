@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Analytics, track } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 import { createPortal } from 'react-dom'
 import {
   CalendarDays,
@@ -60,28 +62,43 @@ function getExternalPromoUrl(url?: string) {
 }
 
 function BoothPromoLinks({ booth }: { booth: Booth }) {
-  // 인스타 홍보글이 있으면 인스타를 우선 사용하고,
-  // 인스타가 없는 경우에만 에브리타임 링크를 사용합니다.
-  const instagram = booth.promoLinks?.instagram
-  const everytime = booth.promoLinks?.everytime
-  const promoUrl = getExternalPromoUrl(instagram || everytime)
-  if (!promoUrl) return null
+  const links = [
+    booth.promoLinks?.instagram ? { type: 'instagram', label: '홍보글 보러가기', url: booth.promoLinks.instagram } : null,
+    booth.promoLinks?.everytime ? { type: 'everytime', label: '홍보글 보러가기', url: booth.promoLinks.everytime } : null,
+    booth.promoLinks?.website ? { type: 'website', label: '공식 홈페이지', url: booth.promoLinks.website } : null,
+  ].filter(Boolean) as Array<{ type: 'instagram' | 'everytime' | 'website'; label: string; url: string }>
 
-  const isInstagram = Boolean(instagram)
+  if (!links.length) return null
 
   return (
     <div className="booth-promo-links">
-      <a className={`booth-promo-btn ${isInstagram ? 'instagram' : 'everytime'}`} href={promoUrl} target="_blank" rel="noreferrer">
-        {isInstagram ? (
-          <svg className="instagram-mark" viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" strokeWidth="2" />
-            <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" strokeWidth="2" />
-            <circle cx="17.3" cy="6.8" r="1.1" fill="currentColor" />
-          </svg>
-        ) : <span className="everytime-mark">E</span>}
-        <span>홍보글 보러가기</span>
-        <ExternalLink size={13} />
-      </a>
+      {links.map((link) => {
+        const promoUrl = getExternalPromoUrl(link.url)
+        return (
+          <a
+            key={`${link.type}-${link.url}`}
+            className={`booth-promo-btn ${link.type}`}
+            href={promoUrl}
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => track('external_link_click', { booth_id: booth.id, booth_name: booth.name, link_type: link.type })}
+          >
+            {link.type === 'instagram' ? (
+              <svg className="instagram-mark" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" strokeWidth="2" />
+                <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" strokeWidth="2" />
+                <circle cx="17.3" cy="6.8" r="1.1" fill="currentColor" />
+              </svg>
+            ) : link.type === 'everytime' ? (
+              <span className="everytime-mark">E</span>
+            ) : (
+              <ExternalLink size={13} />
+            )}
+            <span>{link.label}</span>
+            <ExternalLink size={13} />
+          </a>
+        )
+      })}
     </div>
   )
 }
@@ -90,10 +107,10 @@ function BoothPromoLinks({ booth }: { booth: Booth }) {
 function DaySwitcher({ day, setDay, compact = false }: { day: Day; setDay: (day: Day) => void; compact?: boolean }) {
   return (
     <div className={`day-switcher ${compact ? 'compact' : ''}`} role="tablist" aria-label="축제 날짜 선택">
-      <button type="button" className={day === 'day1' ? 'active' : ''} onClick={() => setDay('day1')}>
+      <button type="button" className={day === 'day1' ? 'active' : ''} onClick={() => { track('day_change', { day: 'day1' }); setDay('day1') }}>
         <span>DAY 1</span><small>9.16 수</small>
       </button>
-      <button type="button" className={day === 'day2' ? 'active' : ''} onClick={() => setDay('day2')}>
+      <button type="button" className={day === 'day2' ? 'active' : ''} onClick={() => { track('day_change', { day: 'day2' }); setDay('day2') }}>
         <span>DAY 2</span><small>9.17 목</small>
       </button>
     </div>
@@ -306,7 +323,12 @@ export default function App() {
   const [selectedSchedule, setSelectedSchedule] = useState<(typeof schedules)[number] | null>(null)
   const [scheduleMode, setScheduleMode] = useState<'stage' | 'busking'>('stage')
   const [campus, setCampus] = useState<Campus>('campus1')
-  const [day, setDay] = useState<Day>('day1')
+  const getDefaultDay = () => {
+    const now = new Date()
+    return now.getFullYear() === 2026 && now.getMonth() === 8 && now.getDate() >= 17 ? 'day2' as Day : 'day1' as Day
+  }
+  const [day, setDay] = useState<Day>(getDefaultDay)
+  const [currentTime, setCurrentTime] = useState(() => new Date())
   const [selectedBooth, setSelectedBooth] = useState<Booth | null>(null)
   const [lastViewedBooth, setLastViewedBooth] = useState<Booth | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
@@ -326,11 +348,52 @@ export default function App() {
 
 
   const { position, status, errorMessage, requestLocation, setPosition } = useGeolocation()
+
+  // 1·2일차 모두 16:30부터 낮 부스 대신 밤 부스를 자동으로 보여준다.
+  // 앱을 켜둔 상태에서도 시간이 바뀌면 자동으로 전환되도록 주기적으로 현재 시각을 갱신한다.
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      const now = new Date()
+      setCurrentTime(now)
+      // 9/17 00:00부터 새로 열어둔 앱도 DAY 2를 기본 화면으로 전환한다.
+      if (now.getFullYear() === 2026 && now.getMonth() === 8 && now.getDate() >= 17) {
+        setDay((currentDay) => currentDay === 'day1' ? 'day2' : currentDay)
+      }
+    }, 30_000)
+    return () => window.clearInterval(timer)
+  }, [])
+
+  // 밤 부스는 '선택한 날짜'의 16:30 이후에만 전환한다.
+  // 예를 들어 9/16 저녁에 DAY 2를 미리 눌러도 DAY 2 낮 부스가 보여야 하며,
+  // 실제 9/17 16:30이 된 뒤에만 DAY 2 밤 부스로 전환한다.
+  const activeBoothSession: 'day' | 'night' = (() => {
+    const festivalDate = day === 'day1'
+      ? { year: 2026, month: 8, date: 16 }
+      : { year: 2026, month: 8, date: 17 }
+    const isSelectedFestivalDate =
+      currentTime.getFullYear() === festivalDate.year &&
+      currentTime.getMonth() === festivalDate.month &&
+      currentTime.getDate() === festivalDate.date
+    const isAfterNightStart =
+      currentTime.getHours() > 16 ||
+      (currentTime.getHours() === 16 && currentTime.getMinutes() >= 30)
+
+    return isSelectedFestivalDate && isAfterNightStart ? 'night' : 'day'
+  })()
   const coords = position?.coords
 
   useEffect(() => {
     if (selectedBooth) {
       setLastViewedBooth(selectedBooth)
+      const selectedCampus = locations.find((location) => location.id === selectedBooth.locationId)?.campus
+      track('booth_view', {
+        booth_id: selectedBooth.id,
+        booth_name: selectedBooth.name,
+        campus: selectedCampus || 'unknown',
+        category: selectedBooth.category || 'unknown',
+        day: selectedBooth.date,
+        session: selectedBooth.session || 'day',
+      })
     }
   }, [selectedBooth])
 
@@ -347,8 +410,17 @@ export default function App() {
       return otherKey === key || (key.includes('청명') && otherKey.includes('청명')) || (key.includes('향영') && otherKey.includes('향영'))
     })
     const richer = [...candidates].sort((a, b) => {
-      const score = (item: Booth) => [item.description, item.menu?.length, item.events?.length, item.operatingHours, item.promoLinks?.instagram || item.promoLinks?.everytime].filter(Boolean).length
-      return score(b) - score(a)
+      // 직접 확보한 정보(가격·링크 등이 포함된 데이터)를 공식 사이트의
+      // 배치/소개 정보보다 우선한다. 공식 정보는 직접 정보가 비어 있을 때 보완용으로만 사용한다.
+      const sourceRank = (item: Booth) => item.source === 'official' ? 0 : 1
+      const score = (item: Booth) => [
+        item.description,
+        item.menu?.length,
+        item.events?.length,
+        item.operatingHours,
+        item.promoLinks?.instagram || item.promoLinks?.everytime,
+      ].filter(Boolean).length
+      return (sourceRank(b) - sourceRank(a)) || (score(b) - score(a))
     })[0]
     if (!richer) return booth
     return {
@@ -370,8 +442,11 @@ export default function App() {
   const allDayItems = useMemo(() => {
     const dayBooths = booths.filter((b) => b.date === day)
     const items = locations.map((location) => {
-      const candidates = dayBooths.filter((b) => b.locationId === location.id)
-      const booth = candidates[0]
+      const locationBooths = dayBooths.filter((b) => b.locationId === location.id)
+      // session이 없는 기존 상세 데이터는 낮 부스로 취급한다.
+      // 밤 부스 데이터가 있으면 현재 세션에 맞는 레코드를 우선 선택한다.
+      const sessionCandidates = locationBooths.filter((b) => (b.session || 'day') === activeBoothSession)
+      const booth = sessionCandidates[0] || locationBooths[0]
       if (booth) return { booth: mergeBoothDetails(booth), location }
 
       // 2캠퍼스 E01~E20처럼 상세정보가 없는 배치도 칸도 지도에서 선택 가능하게 한다.
@@ -392,7 +467,7 @@ export default function App() {
     }).filter(Boolean) as Array<{ booth: Booth; location: typeof locations[number] }>
 
     return items
-  }, [day])
+  }, [day, activeBoothSession])
 
   // 지도만 1/2캠퍼스 선택 상태를 따르고, 검색은 양 캠퍼스 전체를 검색한다.
   const visibleItems = useMemo(
@@ -448,6 +523,14 @@ export default function App() {
     [selectedBooth, nearbyItems]
   )
 
+  // 16:30 이후 현재 세션이 밤으로 전환되었는데, 낮 부스 상세를 열어둔 경우에만 마감 표시를 보여준다.
+  const selectedBoothClosed = Boolean(
+    selectedBooth &&
+    selectedBooth.date === day &&
+    activeBoothSession === 'night' &&
+    (selectedBooth.session || 'day') === 'day'
+  )
+
   return (
     <>
       <div className="festival-atmosphere" aria-hidden="true">
@@ -497,7 +580,7 @@ export default function App() {
               {searchQuery.trim() && (
                 <div className="search-results-popover mobile-search-results">
                   {searchResults.length ? searchResults.map(({ booth, location }) => (
-                    <button key={booth.id} type="button" onClick={() => { setSelectedBooth(booth); setCampus(locations.find((l) => l.id === booth.locationId)?.campus || 'campus1'); setTab('map'); setSearchQuery(''); setIsSearchOpen(false) }}>
+                    <button key={booth.id} type="button" onClick={() => { track('search_result_click', { query: searchQuery.trim(), booth_id: booth.id, booth_name: booth.name }); setSelectedBooth(booth); setCampus(locations.find((l) => l.id === booth.locationId)?.campus || 'campus1'); setTab('map'); setSearchQuery(''); setIsSearchOpen(false) }}>
                       <span>{booth.name}</span><small>{displayCategory(booth.category) || '부스'} · {location.location}</small>
                     </button>
                   )) : <div className="search-empty">검색 결과가 없습니다.</div>}
@@ -535,6 +618,7 @@ export default function App() {
                   setDay={setDay}
                   visibleItems={visibleItems}
                   selectedBooth={selectedBooth}
+                  closedLocationIds={new Set(visibleItems.filter((item) => activeBoothSession === 'night' && (item.booth.session || 'day') === 'day').map((item) => item.location.id))}
                   lastViewedBooth={lastViewedBooth}
                   setSelectedBooth={setSelectedBooth}
                   status={status}
@@ -570,11 +654,11 @@ export default function App() {
                     key={key}
                     type="button"
                     className={`nearby-filter-chip ${nearbyFilter === key ? 'active' : ''}`}
-                    onClick={() => setNearbyFilter(key)}
+                    onClick={() => { track('filter_use', { filter: key }); setNearbyFilter(key) }}
                   >{label}</button>
                 ))}
               </div>
-              <button className="location-permission-btn" onClick={requestLocation} disabled={status === 'loading'} title="위치 권한 사용">
+              <button className="location-permission-btn" onClick={() => { track('location_use'); requestLocation() }} disabled={status === 'loading'} title="위치 권한 사용">
                 <LocateFixed size={13} />
                 <span>{status === 'loading' ? '확인 중' : coords ? '위치 새로고침' : status === 'denied' ? '권한 설정 확인' : '위치 권한'}</span>
               </button>
@@ -586,7 +670,7 @@ export default function App() {
                 <button
                   key={booth.id}
                   className="booth-list-card"
-                  onClick={() => { setSelectedBooth(booth); setCampus(locations.find((l) => l.id === booth.locationId)?.campus || 'campus1'); setTab('map') }}
+                  onClick={() => { track('nearby_booth_click', { booth_id: booth.id, booth_name: booth.name }); setSelectedBooth(booth); setCampus(locations.find((l) => l.id === booth.locationId)?.campus || 'campus1'); setTab('map') }}
                 >
                   {distance !== undefined && <div className="booth-distance-tag">{formatDistance(distance)}</div>}
                   <div className="booth-thumb-avatar">
@@ -644,8 +728,8 @@ export default function App() {
                   const performers = item.description?.split(' · ') ?? []
                   return (
                     <div key={`${item.date}-${item.time}-${item.title}`} className={`timeline-item timeline-item-clickable ${isCurrentActive ? 'active' : ''}`} role="button" tabIndex={0}
-                      onClick={() => setSelectedSchedule(item)}
-                      onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setSelectedSchedule(item) } }}
+                      onClick={() => { track('schedule_view', { day: item.date, title: item.title, time: item.time }); setSelectedSchedule(item) }}
+                      onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); track('schedule_view', { day: item.date, title: item.title, time: item.time }); setSelectedSchedule(item) } }}
                       aria-label={`${item.title} 상세 보기`}>
                       <div className="timeline-time">{item.time.split("~")[0]}~</div>
                       <div className="timeline-axis"><div className="timeline-node" /></div>
@@ -736,7 +820,7 @@ export default function App() {
                 <img src="/assets/decoration/crescent-moon-20260915-040004.webp" alt="" />
                 <img className="detail-hero-mascot" src={assets.mapMascot} alt="" />
                 <div>
-                  <span>{selectedLocation.code}</span>
+                  <div className="detail-code-row"><span>{selectedLocation.code}</span></div>
                   <strong>{selectedBooth.name}</strong>
                 </div>
               </div>
@@ -860,7 +944,7 @@ export default function App() {
               {searchQuery.trim() && (
                 <div className="search-results-popover">
                   {searchResults.length ? searchResults.map(({ booth, location }) => (
-                    <button key={booth.id} type="button" onClick={() => { setSelectedBooth(booth); setCampus(locations.find((l) => l.id === booth.locationId)?.campus || 'campus1'); setTab('map'); setSearchQuery('') }}>
+                    <button key={booth.id} type="button" onClick={() => { track('search_result_click', { query: searchQuery.trim(), booth_id: booth.id, booth_name: booth.name }); setSelectedBooth(booth); setCampus(locations.find((l) => l.id === booth.locationId)?.campus || 'campus1'); setTab('map'); setSearchQuery('') }}>
                       <span>{booth.name}</span><small>{displayCategory(booth.category) || '부스'} · {location.location}</small>
                     </button>
                   )) : <div className="search-empty">검색 결과가 없습니다.</div>}
@@ -878,6 +962,7 @@ export default function App() {
                 setDay={setDay}
                 visibleItems={visibleItems}
                 selectedBooth={selectedBooth}
+                closedLocationIds={new Set(visibleItems.filter((item) => activeBoothSession === 'night' && (item.booth.session || 'day') === 'day').map((item) => item.location.id))}
                 lastViewedBooth={lastViewedBooth}
                 setSelectedBooth={setSelectedBooth}
                 status={status}
@@ -904,7 +989,7 @@ export default function App() {
                 {schedules.filter((s) => s.date === day && (scheduleMode === 'stage' ? s.title === '무대 공연' : s.title.startsWith('버스킹'))).map((item) => {
                   const isCurrentActive = isEventActive(item.date, item.time)
                   const performers = item.description?.split(' · ') ?? []
-                  return <div key={`${item.date}-${item.time}-${item.title}`} className={`timeline-item timeline-item-clickable ${isCurrentActive ? 'active' : ''}`} role="button" tabIndex={0} onClick={() => setSelectedSchedule(item)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setSelectedSchedule(item) } }} aria-label={`${item.title} 상세 보기`}>
+                  return <div key={`${item.date}-${item.time}-${item.title}`} className={`timeline-item timeline-item-clickable ${isCurrentActive ? 'active' : ''}`} role="button" tabIndex={0} onClick={() => { track('schedule_view', { day: item.date, title: item.title, time: item.time }); setSelectedSchedule(item) }} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); track('schedule_view', { day: item.date, title: item.title, time: item.time }); setSelectedSchedule(item) } }} aria-label={`${item.title} 상세 보기`}>
                     <div className="timeline-time">{item.time.split("~")[0]}~</div><div className="timeline-axis"><div className="timeline-node" /></div>
                     <div className="timeline-content"><div className="timeline-header-row"><strong>{item.title}</strong>{isCurrentActive && <span className="timeline-active-badge">현재 진행 중</span>}</div><small><MapPin size={12} /> {item.place}</small><div className={`schedule-performer-list ${scheduleMode === 'busking' ? 'busking-performer-list' : ''}`}>{performers.map((name, index) => <span key={`${name}-${index}`}><b>{index + 1}</b>{name}</span>)}</div></div>
                   </div>
@@ -934,11 +1019,11 @@ export default function App() {
                       key={key}
                       type="button"
                       className={`nearby-filter-chip ${nearbyFilter === key ? 'active' : ''}`}
-                      onClick={() => setNearbyFilter(key)}
+                      onClick={() => { track('filter_use', { filter: key }); setNearbyFilter(key) }}
                     >{label}</button>
                   ))}
                 </div>
-                <button className="location-permission-btn" onClick={requestLocation} disabled={status === 'loading'}>
+                <button className="location-permission-btn" onClick={() => { track('location_use'); requestLocation() }} disabled={status === 'loading'}>
                   <LocateFixed size={13} />
                   <span>{status === 'loading' ? '확인 중' : coords ? '위치 새로고침' : status === 'denied' ? '권한 설정 확인' : '위치 권한'}</span>
                 </button>
@@ -950,7 +1035,7 @@ export default function App() {
                     <button
                       key={booth.id}
                       className="booth-list-card"
-                      onClick={() => { setSelectedBooth(booth); setCampus(locations.find((l) => l.id === booth.locationId)?.campus || 'campus1'); setTab('map') }}
+                      onClick={() => { track('nearby_booth_click', { booth_id: booth.id, booth_name: booth.name }); setSelectedBooth(booth); setCampus(locations.find((l) => l.id === booth.locationId)?.campus || 'campus1'); setTab('map') }}
                     >
                       {distance !== undefined && <div className="booth-distance-tag">{formatDistance(distance)}</div>}
                       <div className="booth-thumb-avatar">
@@ -995,19 +1080,21 @@ export default function App() {
                   <span className="code-pill-tag">{selectedLocation.code}</span>
                   <span className="category-tag">{displayCategory(selectedBooth.category)}</span>
                 </div>
-                <button
-                  onClick={() => setSelectedBooth(null)}
-                  style={{ padding: '3px 7px', borderRadius: '6px', fontSize: '11px', color: '#666', background: 'rgba(0,0,0,0.06)' }}
-                >
-                  닫기
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <button
+                    onClick={() => setSelectedBooth(null)}
+                    style={{ padding: '3px 7px', borderRadius: '6px', fontSize: '11px', color: '#666', background: 'rgba(0,0,0,0.06)' }}
+                  >
+                    닫기
+                  </button>
+                </div>
               </div>
 
               <div className="detail-hero-art">
                 <img src="/assets/decoration/crescent-moon-20260915-040004.webp" alt="" />
                 <img className="detail-hero-mascot" src={assets.mapMascot} alt="" />
                 <div>
-                  <span>{selectedLocation.code}</span>
+                  <div className="detail-code-row"><span>{selectedLocation.code}</span></div>
                   <strong>{selectedBooth.name}</strong>
                 </div>
               </div>
@@ -1099,6 +1186,8 @@ export default function App() {
           document.body
         )}
       </div>
+      <Analytics />
+      <SpeedInsights />
     </>
   )
 }

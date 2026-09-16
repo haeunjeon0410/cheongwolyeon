@@ -3,13 +3,13 @@ import { Navigation, Plus, Minus } from 'lucide-react'
 import type { Booth, Campus, Day } from '../types'
 import { gpsToMapPosition, isWithinCampus } from '../utils'
 
-type MapItem = { booth: Booth; location: { code: string; mapPosition: { x: number; y: number }; mapSize?: { width: number; height: number }; latitude: number; longitude: number } }
-type Props = { campus: Campus; day: Day; setDay: (day: Day) => void; visibleItems: MapItem[]; selectedBooth: Booth | null; lastViewedBooth: Booth | null; setSelectedBooth: (booth: Booth | null) => void; status: string; coords?: GeolocationCoordinates; requestLocation: () => void }
+type MapItem = { booth: Booth; location: { id: string; code: string; mapPosition: { x: number; y: number }; mapSize?: { width: number; height: number }; latitude: number; longitude: number } }
+type Props = { campus: Campus; day: Day; setDay: (day: Day) => void; visibleItems: MapItem[]; selectedBooth: Booth | null; closedLocationIds: Set<string>; lastViewedBooth: Booth | null; setSelectedBooth: (booth: Booth | null) => void; status: string; coords?: GeolocationCoordinates; requestLocation: () => void }
 const mapSources: Record<Campus, string> = { campus1: '/assets/maps/campus1.webp', campus2: '/assets/maps/campus2.webp' }
 
 type Point = { x: number; y: number }
 
-export default function VectorCampusMapView({ campus, day, setDay, visibleItems, selectedBooth, lastViewedBooth, setSelectedBooth, status, coords, requestLocation }: Props) {
+export default function VectorCampusMapView({ campus, day, setDay, visibleItems, selectedBooth, closedLocationIds, lastViewedBooth, setSelectedBooth, status, coords, requestLocation }: Props) {
   const [zoom, setZoom] = useState(() => (typeof window !== 'undefined' && window.innerWidth < 980 ? 1.18 : 1))
   const [pan, setPan] = useState({ x: 0, y: 0 })
   const [dragging, setDragging] = useState(false)
@@ -125,10 +125,11 @@ export default function VectorCampusMapView({ campus, day, setDay, visibleItems,
           {visibleItems.map((item) => {
             const pos = item.location.mapPosition
             const isSelected = selectedBooth?.id === item.booth.id
+            const isClosed = closedLocationIds.has(item.location.id)
             return <button
               type="button"
               key={`${item.booth.id}-${item.location.code}`}
-              className={`booth-hotspot ${isSelected ? 'selected' : ''}`}
+              className={`booth-hotspot ${isSelected ? 'selected' : ''} ${isClosed ? 'closed' : ''}`}
               style={{
                 left: `${pos.x}%`,
                 top: `${pos.y}%`,
@@ -140,6 +141,7 @@ export default function VectorCampusMapView({ campus, day, setDay, visibleItems,
               aria-label={item.location.code}
             >
               <span>{item.location.code}</span>
+              {isClosed && <em className="booth-closed-map-badge">마감</em>}
             </button>
           })}
         </div>

@@ -2412,6 +2412,24 @@ body::before {
   font-size: 10px;
   line-height: 1.5;
 }
+.booth-closed-badge {
+  position: absolute;
+  top: 13px;
+  right: 43px;
+  z-index: 4;
+  padding: 3px 7px;
+  border: 1px solid rgba(202, 169, 79, .42);
+  border-radius: 999px;
+  background: rgba(202, 169, 79, .12);
+  color: #d7b75e;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+.booth-closed-badge.desktop {
+  position: static;
+  padding: 3px 6px;
+}
 .timeline-description {
   margin: 5px 0 0;
   color: #7f91b3;
@@ -3666,6 +3684,8 @@ button { -webkit-tap-highlight-color: transparent; }
 /* 홍보글 단일 CTA: 인스타 우선, 없으면 에브리타임으로 연결 */
 .booth-promo-links {
   display: flex;
+  flex-direction: column;
+  gap: 7px;
   width: 100%;
   margin-top: 12px;
 }
@@ -3689,7 +3709,8 @@ button { -webkit-tap-highlight-color: transparent; }
   color: #f8e8b0;
   background: rgba(255, 255, 255, 0.055);
 }
-.booth-promo-links .booth-promo-btn.everytime {
+.booth-promo-links .booth-promo-btn.everytime,
+.booth-promo-links .booth-promo-btn.website {
   color: #f8e8b0;
   background: rgba(255, 255, 255, 0.055);
 }
@@ -4545,5 +4566,96 @@ button { -webkit-tap-highlight-color: transparent; }
     color: #fff5d6 !important;
     background: rgba(7,18,47,.72) !important;
     text-shadow: 0 0 8px rgba(248,223,151,.42) !important;
+  }
+}
+
+
+/* v56 — current booth closing state */
+.detail-code-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.booth-closed-badge {
+  position: static !important;
+  padding: 2px 6px !important;
+  border: 1px solid rgba(220, 62, 62, .55) !important;
+  border-radius: 999px !important;
+  background: rgba(220, 62, 62, .13) !important;
+  color: #e04b4b !important;
+  font-size: 9px !important;
+  font-weight: 900 !important;
+  letter-spacing: .02em;
+  line-height: 1.2;
+}
+.booth-closed-badge.desktop { position: static !important; }
+.booth-hotspot.closed {
+  border-color: rgba(218, 67, 67, .72) !important;
+  background: rgba(218, 67, 67, .12) !important;
+}
+.booth-hotspot.closed .booth-closed-map-badge {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  z-index: 40;
+  padding: 2px 5px;
+  border: 1px solid rgba(255, 216, 216, .72);
+  border-radius: 999px;
+  background: #c94343;
+  color: #fff8f8;
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1.2;
+  box-shadow: 0 2px 6px rgba(55, 8, 8, .25);
+  pointer-events: none;
+}
+@media (max-width: 979px) {
+  /* 모바일은 마감 표시가 지도/부스를 가리지 않도록 아주 은은하게 */
+  .booth-hotspot.closed {
+    background: rgba(218, 67, 67, .08) !important;
+    border: 1px solid rgba(218, 67, 67, .28) !important;
+    border-radius: 4px !important;
+    box-shadow: none !important;
+  }
+  .booth-hotspot.closed .booth-closed-map-badge {
+    top: -3px;
+    right: -3px;
+    padding: 0 3px;
+    font-size: 5px;
+    line-height: 1.2;
+    background: rgba(190, 45, 45, .42);
+    border-color: rgba(220, 62, 62, .22);
+  }
+}
+
+
+/* v58 — compact translucent closed badge on map only */
+.booth-closed-map-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  z-index: 40;
+  padding: 1px 4px;
+  border: 1px solid rgba(220, 62, 62, .38);
+  border-radius: 999px;
+  background: rgba(190, 45, 45, .58);
+  color: rgba(255, 245, 245, .92);
+  font-size: 6px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -.02em;
+  box-shadow: none;
+  pointer-events: none;
+}
+@media (max-width: 979px) {
+  .booth-closed-map-badge {
+    top: -4px;
+    right: -4px;
+    padding: 1px 4px;
+    font-size: 6px;
+    background: rgba(190, 45, 45, .52);
+    border-color: rgba(220, 62, 62, .32);
   }
 }
