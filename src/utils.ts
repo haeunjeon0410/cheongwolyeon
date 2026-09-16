@@ -60,38 +60,37 @@ const FESTIVAL_DATES = {
 // 공연이 현재 진행 중인지 판단
 export function isEventActive(date: 'day1' | 'day2', timeStr: string): boolean {
   const now = new Date()
-  
-  // 축제 날짜 확인
   const festivalDate = FESTIVAL_DATES[date]
   const currentDate = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const festivalDay = new Date(festivalDate.getFullYear(), festivalDate.getMonth(), festivalDate.getDate())
-  
-  // 축제 날짜가 아니면 무조건 false
-  if (currentDate.getTime() !== festivalDay.getTime()) {
-    return false
+
+  if (currentDate.getTime() !== festivalDay.getTime()) return false
+  if (timeStr.includes('미정')) return false
+
+  // 실제 공연 시간 범위가 있으면 시작~종료를 그대로 사용합니다.
+  // 예: 16:13~16:31 → 16:13부터 16:31까지만 진행 중
+  const rangeMatch = timeStr.match(/(\d{1,2}):(\d{2})\s*~\s*(\d{1,2}):(\d{2})/)
+  if (rangeMatch) {
+    const [, startHour, startMinute, endHour, endMinute] = rangeMatch
+    const eventStart = new Date(
+      festivalDate.getFullYear(), festivalDate.getMonth(), festivalDate.getDate(),
+      parseInt(startHour, 10), parseInt(startMinute, 10)
+    )
+    const eventEnd = new Date(
+      festivalDate.getFullYear(), festivalDate.getMonth(), festivalDate.getDate(),
+      parseInt(endHour, 10), parseInt(endMinute, 10)
+    )
+    return now >= eventStart && now < eventEnd
   }
-  
-  // "시간 미정"인 경우 false
-  if (timeStr.includes('미정')) {
-    return false
-  }
-  
-  // 시간 파싱 (예: "13:00", "14:40")
+
+  // 종료 시간이 없는 단일 시작 시각은 기존 일정 호환을 위해 90분으로 처리합니다.
   const timeMatch = timeStr.match(/(\d{1,2}):(\d{2})/)
-  if (!timeMatch) {
-    return false
-  }
-  
+  if (!timeMatch) return false
   const [, hourStr, minuteStr] = timeMatch
-  const eventHour = parseInt(hourStr, 10)
-  const eventMinute = parseInt(minuteStr, 10)
-  
-  // 이벤트 시작 시간
-  const eventStart = new Date(festivalDate.getFullYear(), festivalDate.getMonth(), festivalDate.getDate(), eventHour, eventMinute)
-  
-  // 이벤트 종료 시간 추정 (시작 후 1시간 30분)
+  const eventStart = new Date(
+    festivalDate.getFullYear(), festivalDate.getMonth(), festivalDate.getDate(),
+    parseInt(hourStr, 10), parseInt(minuteStr, 10)
+  )
   const eventEnd = new Date(eventStart.getTime() + 90 * 60 * 1000)
-  
-  // 현재 시간이 시작~종료 사이인지 확인
-  return now >= eventStart && now <= eventEnd
+  return now >= eventStart && now < eventEnd
 }

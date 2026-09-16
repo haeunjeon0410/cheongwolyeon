@@ -1928,7 +1928,7 @@ export const booths: Booth[] = [
     id: "json-27-day1-e07",
     locationId: "e07",
     date: "day1",
-    name: "숙명입학홍보대사 폴라리스",
+    name: "폴라리스",
     category: "음식",
     description: "'폴송이의 아이스크림 가게' - 밀크 아이스크림과 토핑 커스텀",
     menu: [
@@ -1944,7 +1944,7 @@ export const booths: Booth[] = [
     id: "json-27-day1-e08",
     locationId: "e08",
     date: "day1",
-    name: "숙명입학홍보대사 폴라리스",
+    name: "폴라리스",
     category: "음식",
     description: "'폴송이의 아이스크림 가게' - 밀크 아이스크림과 토핑 커스텀",
     menu: [
@@ -1960,7 +1960,7 @@ export const booths: Booth[] = [
     id: "json-27-day2-e07",
     locationId: "e07",
     date: "day2",
-    name: "숙명입학홍보대사 폴라리스",
+    name: "폴라리스",
     category: "음식",
     description: "'폴송이의 아이스크림 가게' - 밀크 아이스크림과 토핑 커스텀",
     menu: [
@@ -1976,7 +1976,7 @@ export const booths: Booth[] = [
     id: "json-27-day2-e08",
     locationId: "e08",
     date: "day2",
-    name: "숙명입학홍보대사 폴라리스",
+    name: "폴라리스",
     category: "음식",
     description: "'폴송이의 아이스크림 가게' - 밀크 아이스크림과 토핑 커스텀",
     menu: [

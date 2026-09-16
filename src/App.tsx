@@ -618,7 +618,7 @@ export default function App() {
                   setDay={setDay}
                   visibleItems={visibleItems}
                   selectedBooth={selectedBooth}
-                  closedLocationIds={new Set(visibleItems.filter((item) => activeBoothSession === 'night' && (item.booth.session || 'day') === 'day').map((item) => item.location.id))}
+                  closedLocationIds={new Set([...visibleItems.filter((item) => activeBoothSession === 'night' && (item.booth.session || 'day') === 'day').map((item) => item.location.id), ...(day === 'day1' && activeBoothSession === 'night' ? ['c11', 'c12'] : [])])}
                   lastViewedBooth={lastViewedBooth}
                   setSelectedBooth={setSelectedBooth}
                   status={status}
@@ -962,7 +962,7 @@ export default function App() {
                 setDay={setDay}
                 visibleItems={visibleItems}
                 selectedBooth={selectedBooth}
-                closedLocationIds={new Set(visibleItems.filter((item) => activeBoothSession === 'night' && (item.booth.session || 'day') === 'day').map((item) => item.location.id))}
+                closedLocationIds={new Set([...visibleItems.filter((item) => activeBoothSession === 'night' && (item.booth.session || 'day') === 'day').map((item) => item.location.id), ...(day === 'day1' && activeBoothSession === 'night' ? ['c11', 'c12'] : [])])}
                 lastViewedBooth={lastViewedBooth}
                 setSelectedBooth={setSelectedBooth}
                 status={status}
