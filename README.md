@@ -6,6 +6,12 @@
 
 ### 모바일 (390 × 844)
 
+| 인트로 | 축제 지도 | 내 주변 | 공연 일정 | 더보기 |
+| :---: | :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/mobile-intro.webp" width="160" alt="모바일 인트로" /> | <img src="docs/screenshots/mobile-map.webp" width="160" alt="모바일 축제 지도" /> | <img src="docs/screenshots/mobile-nearby.webp" width="160" alt="모바일 내 주변" /> | <img src="docs/screenshots/mobile-schedule.webp" width="160" alt="모바일 공연 일정" /> | <img src="docs/screenshots/mobile-more.webp" width="160" alt="모바일 더보기" /> |
+
+### PC (1440 × 900)
+
 | 축제 지도 | 공연 일정 |
 | :---: | :---: |
 | <img src="docs/screenshots/pc-map.webp" width="400" alt="PC 축제 지도" /> | <img src="docs/screenshots/pc-schedule.webp" width="400" alt="PC 공연 일정" /> |
