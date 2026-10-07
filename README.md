@@ -1,5 +1,19 @@
 # 2026 청파제 청월연 안내 웹사이트
 
+숙명여자대학교 2026 청파제 「靑月宴(청월연)」 부스 지도·공연 일정·축제 안내를 한곳에서 볼 수 있는 웹사이트입니다. 화면 크기에 따라 **모바일 전용 UI**(하단 탭 바)와 **PC 전용 UI**(좌측 사이드바)가 각각 제공됩니다.
+
+## 스크린샷
+
+### 모바일 (390 × 844)
+
+| 축제 지도 | 공연 일정 |
+| :---: | :---: |
+| <img src="docs/screenshots/pc-map.webp" width="400" alt="PC 축제 지도" /> | <img src="docs/screenshots/pc-schedule.webp" width="400" alt="PC 공연 일정" /> |
+
+| 내 주변 | 더보기 |
+| :---: | :---: |
+| <img src="docs/screenshots/pc-nearby.webp" width="400" alt="PC 내 주변" /> | <img src="docs/screenshots/pc-more.webp" width="400" alt="PC 더보기" /> |
+
 ## 로컬 실행
 
 ```bash
